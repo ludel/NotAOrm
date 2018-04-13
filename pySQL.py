@@ -72,6 +72,6 @@ if __name__ == '__main__':
     o.get("site", "url, date")
     o.join("requests", Condition("requests.id", Opp.Equ, "site.id"))
     o.where(Condition("site.id", Opp.Sup, 10))
-    o.order("site.id")
+    o.order("site.id", Sort.Desc)
     o.limit(5)
-    print(o.exec())
+    print(o)
