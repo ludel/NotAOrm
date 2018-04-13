@@ -1,6 +1,7 @@
 import sqlite3
-from resource.sortEnum import Sort
+
 from resource.condition import Condition, Operator
+from resource.sortEnum import Sort
 
 
 class PySQL:
@@ -34,11 +35,15 @@ class PySQL:
         return self
 
     def where(self, condition: Condition):
-        self.query += f"WHERE {condition.row_from} {condition.operator.value} {condition.row_to} "
+        instruction = "WHERE" if not "WHERE" in self.query else "AND"
+        self.query += f"{instruction} {condition.row_from} {condition.operator.value} {condition.row_to} "
+
         return self
 
     def join(self, table: str, condition: Condition):
-        self.query += f"JOIN {table} `{table}` ON {condition.row_from} {condition.operator.value} {condition.row_to} "
+        instruction = "JOIN" if "JOIN" not in self.query else "AND"
+        self.query += f"{instruction} {table} `{table}`" \
+                      f" ON {condition.row_from} {condition.operator.value} {condition.row_to} "
 
         return self
 
@@ -71,10 +76,10 @@ class PySQL:
         return self
 
     def __str__(self):
-        return self.query
+        return "SQL Request : "+self.query
 
 
 if __name__ == '__main__':
     o = PySQL('main.db')
-    ob = o.get("site").where(Condition("id", Operator.Diff, 15)).order("id", Sort.Desc).limit(10)
-    print(ob.exec())
+    ob = o.get("site").where(Condition("id", Operator.Sup, 10)).where(Condition("id", Operator.Inf, 20))
+    print(ob)
