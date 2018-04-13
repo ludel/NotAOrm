@@ -76,5 +76,5 @@ class PySQL:
 
 if __name__ == '__main__':
     o = PySQL('main.db')
-    ob = o.get("site").where(Condition("id", Operator.Diff, 15)).where(Condition("id", Operator.Inf, 15))
+    ob = o.get("site").where(Condition("id", Operator.Diff, 15)).order("id", Sort.Desc).limit(10)
     print(ob.exec())
