@@ -33,7 +33,7 @@ class PySQL:
         self.query = f"SELECT {row} FROM {table} `{table}` "
 
     def where(self, condition: Condition):
-        instruction = "WHERE" if not "WHERE" in self.query else "AND"
+        instruction = "WHERE" if "WHERE" not in self.query else "AND"
         self.query += f"{instruction} {condition.row_from} {condition.operator.value} {condition.row_to} "
 
     def join(self, table: str, condition: Condition):
@@ -53,13 +53,13 @@ class PySQL:
     def update(self, table: str, **columns):
         set_value = ""
         for key, value in columns.items():
-            set_value += f"{key} = '{value}'"
-        self.query = f"UPDATE {table} SET {set_value} "
+            set_value += f"{key} = '{value}',"
+        self.query = f"UPDATE {table} SET {set_value[0:-1]} "
 
         return self.query
 
     def insert(self, table: str, **columns):
-        all_keys = "".join(key+"," for key in columns.keys())
+        all_keys = "".join(key + "," for key in columns.keys())
         all_values = "".join(f"'{value}'," for value in columns.values())
         self.query = f"INSERT INTO {table} ({all_keys[0:-1]}) VALUES ({all_values[0:-1]}) "
 
@@ -75,10 +75,8 @@ class PySQL:
 if __name__ == '__main__':
     o = PySQL('main.db')
     o.get("site", "url, date")
-    o.join("requests", Condition("requests.id", Opp.Equ, "site.id"))
-    o.where(Condition("site.id", Opp.Sup, 10))
+    o.join("requests", Condition("requests.id", Opp.equ, "site.id"))
+    o.where(Condition("site.id", Opp.sup, 10))
     o.order("site.id", Sort.Desc)
     o.limit(5)
-    o.query = ""
-    o.insert("user", pseudo="size", password="password")
-    o.exec(commit=True)
+    print(o.exec())
