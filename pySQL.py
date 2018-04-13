@@ -42,7 +42,7 @@ class PySQL:
                       f" ON {condition.row_from} {condition.operator.value} {condition.row_to} "
 
     def order(self, key: str, sort: Sort = Sort.Asc):
-        self.query += f"ORDER BY {key} {sort.name} "
+        self.query += f"ORDER BY {key} {sort.value} "
 
     def group(self, key: str):
         self.query += f"GROUP BY {key} "
@@ -74,4 +74,4 @@ if __name__ == '__main__':
     o.where(Condition("site.id", Opp.Sup, 10))
     o.order("site.id", Sort.Desc)
     o.limit(5)
-    print(o)
+    print(o.exec())
