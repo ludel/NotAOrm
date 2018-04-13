@@ -58,6 +58,11 @@ class PySQL:
 
         return self.query
 
+    def insert(self, table: str, **columns):
+        all_keys = "".join(key+"," for key in columns.keys())
+        all_values = "".join(f"'{value}'," for value in columns.values())
+        self.query = f"INSERT INTO {table} ({all_keys[0:-1]}) VALUES ({all_values[0:-1]}) "
+
     def delete(self, table):
         self.query = f"DELETE FROM {table} "
 
@@ -74,4 +79,6 @@ if __name__ == '__main__':
     o.where(Condition("site.id", Opp.Sup, 10))
     o.order("site.id", Sort.Desc)
     o.limit(5)
-    print(o.exec())
+    o.query = ""
+    o.insert("user", pseudo="size", password="password")
+    o.exec(commit=True)
