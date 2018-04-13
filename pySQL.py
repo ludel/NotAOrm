@@ -32,35 +32,23 @@ class PySQL:
     def get(self, table: str, row: str = "*"):
         self.query = f"SELECT {row} FROM {table} `{table}` "
 
-        return self.query
-
     def where(self, condition: Condition):
         instruction = "WHERE" if not "WHERE" in self.query else "AND"
         self.query += f"{instruction} {condition.row_from} {condition.operator.value} {condition.row_to} "
-
-        return self.query
 
     def join(self, table: str, condition: Condition):
         instruction = "JOIN" if "JOIN" not in self.query else "AND"
         self.query += f"{instruction} {table} `{table}`" \
                       f" ON {condition.row_from} {condition.operator.value} {condition.row_to} "
 
-        return self.query
-
     def order(self, key: str, sort: Sort = Sort.Asc):
         self.query += f"ORDER BY {key} {sort.name} "
-
-        return self.query
 
     def group(self, key: str):
         self.query += f"GROUP BY {key} "
 
-        return self.query
-
     def limit(self, number: int):
         self.query += f"LIMIT {number} "
-
-        return self.query
 
     def update(self, table: str, **columns):
         set_value = ""
