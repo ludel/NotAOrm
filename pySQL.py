@@ -1,6 +1,6 @@
 import sqlite3
 
-from resource.condition import Condition, Operator
+from resource.condition import Condition, Operator as Opp
 from resource.sortEnum import Sort
 
 
@@ -76,10 +76,13 @@ class PySQL:
         return self
 
     def __str__(self):
-        return "SQL Request : "+self.query
+        return "SQL Request : " + self.query
 
 
 if __name__ == '__main__':
     o = PySQL('main.db')
-    ob = o.get("site").where(Condition("id", Operator.Sup, 10)).where(Condition("id", Operator.Inf, 20))
-    print(ob)
+    o.get("site", "url, date").join("requests", Condition("requests.id", Opp.Equ, "site.id"))
+    o.where(Condition("site.id", Opp.Sup, 10))
+    o.where(Condition("site.id", Opp.Inf, 20))
+    o.order("site.id").limit(5)
+    print(o.exec())
