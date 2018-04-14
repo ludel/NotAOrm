@@ -36,10 +36,11 @@ class PySQL:
         instruction = "WHERE" if "WHERE" not in self.query else "AND"
         self.query += f"{instruction} {condition.row_from} {condition.operator.value} {condition.row_to} "
 
-    def join(self, table: str, condition: Condition):
-        instruction = "JOIN" if "JOIN" not in self.query else "AND"
-        self.query += f"{instruction} {table} `{table}`" \
-                      f" ON {condition.row_from} {condition.operator.value} {condition.row_to} "
+    def add(self, table: str, condition: Condition):
+            instruction = "JOIN" if "JOIN" not in self.query else "AND"
+            self.query += f"{instruction} {table} `{table}`" \
+                          f" ON {condition.row_from} {condition.operator.value} {condition.row_to} "
+
 
     def order(self, key: str, sort: Sort = Sort.Asc):
         self.query += f"ORDER BY {key} {sort.value} "
