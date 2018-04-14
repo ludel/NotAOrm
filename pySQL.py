@@ -41,8 +41,9 @@ class PySQL:
         self.query += f"{instruction} {table} `{table}`" \
                       f" ON {condition.row_from} {condition.operator.value} {condition.row_to} "
 
-    def sort(self, row: str, sort: Sort = Sort.Asc):
-        self.query += f"ORDER BY {row} {sort.value} "
+
+    def order(self, key: str, sort: Sort = Sort.Asc):
+        self.query += f"ORDER BY {key} {sort.value} "
 
     def group(self, key: str):
         self.query += f"GROUP BY {key} "
@@ -73,10 +74,11 @@ class PySQL:
 
 
 if __name__ == '__main__':
-    o = PySQL('main.db')
-    o.get(table="site", row="url, date")
-    o.add(table="requests", condition=Condition("requests.id", Opp.equ, "site.id"))
-    o.where(condition=Condition("site.id", Opp.sup, 10))
-    o.sort(row="site.id", sort=Sort.Desc)
-    o.limit(number=1)
-    print(o.exec())
+    # Exemple 
+        # o = PySQL('#DataBase.bd')
+        # o.get("TABLE_1", "column1, column2")
+        # o.join("TABLE_2", Condition("value_table_2.id", Opp.equ, "value_table_1.id"))
+        # o.where(Condition("value_table_1.id", Opp.sup, 10))
+        # o.order("value_table_1.id", Sort.Desc)
+        # o.limit(5)
+        # print(o.exec())
