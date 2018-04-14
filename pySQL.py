@@ -78,5 +78,5 @@ if __name__ == '__main__':
     o.add(table="requests", condition=Condition("requests.id", Opp.equ, "site.id"))
     o.where(condition=Condition("site.id", Opp.sup, 10))
     o.sort(row="site.id", sort=Sort.Desc)
-    o.limit(number=1)
+    o.limit(number=2)
     print(o.exec())
