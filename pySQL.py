@@ -36,13 +36,13 @@ class PySQL:
         instruction = "WHERE" if "WHERE" not in self.query else "AND"
         self.query += f"{instruction} {condition.row_from} {condition.operator.value} {condition.row_to} "
 
-    def join(self, table: str, condition: Condition):
+    def add(self, table: str, condition: Condition):
         instruction = "JOIN" if "JOIN" not in self.query else "AND"
         self.query += f"{instruction} {table} `{table}`" \
                       f" ON {condition.row_from} {condition.operator.value} {condition.row_to} "
 
-    def order(self, key: str, sort: Sort = Sort.Asc):
-        self.query += f"ORDER BY {key} {sort.value} "
+    def sort(self, row: str, sort: Sort = Sort.Asc):
+        self.query += f"ORDER BY {row} {sort.value} "
 
     def group(self, key: str):
         self.query += f"GROUP BY {key} "
@@ -74,9 +74,9 @@ class PySQL:
 
 if __name__ == '__main__':
     o = PySQL('main.db')
-    o.get("site", "url, date")
-    o.join("requests", Condition("requests.id", Opp.equ, "site.id"))
-    o.where(Condition("site.id", Opp.sup, 10))
-    o.order("site.id", Sort.Desc)
-    o.limit(5)
+    o.get(table="site", row="url, date")
+    o.add(table="requests", condition=Condition("requests.id", Opp.equ, "site.id"))
+    o.where(condition=Condition("site.id", Opp.sup, 10))
+    o.sort(row="site.id", sort=Sort.Desc)
+    o.limit(number=1)
     print(o.exec())
