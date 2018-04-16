@@ -1,4 +1,4 @@
-from .operatorEnum import Operator
+from Enum.operatorEnum import Operator
 
 
 class Condition:

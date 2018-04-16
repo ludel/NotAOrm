@@ -1,4 +1,4 @@
-from resource.table import Table
+from Class.table import Table
 
 User = Table(table_name="user", table_row=('id', 'pseudo', 'password'))
 Requests = Table(table_name="requests", table_row=('id', 'number', 'siteId', 'date'))

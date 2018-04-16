@@ -1,6 +1,6 @@
 import sqlite3
 
-from resource.condition import Condition
+from Class.condition import Condition
 
 
 class Table:
