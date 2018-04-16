@@ -24,7 +24,6 @@ class Table:
         return list_of_data
 
     def exec(self, query, commit=False):
-        print(query)
         req = self.conn.execute(query)
         if commit:
             req.execute("COMMIT ")
