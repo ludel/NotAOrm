@@ -8,8 +8,9 @@ class Table:
 
     def __init__(self, table_name, **table_row):
         self.table_name = table_name
-        self.table_row = table_row
         self.conn = sqlite3.connect(self.path_database)
+        for row in table_row:
+            setattr(self, row, f"{table_name}.{row}")
 
     @staticmethod
     def fetch_to_dic(selected):
