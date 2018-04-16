@@ -3,14 +3,7 @@ import sqlite3
 from resource.condition import Condition
 
 
-class Table:
-    path_database = "main.db"
-
-    def __init__(self, table_name, table_row: tuple):
-        self.table_name = table_name
-        self.conn = sqlite3.connect(self.path_database)
-        for row in table_row:
-            setattr(self, row, f"{table_name}.{row}")
+class Query:
 
     @staticmethod
     def fetch_to_dic(selected):
@@ -31,14 +24,19 @@ class Table:
         return self.fetch_to_dic(req)
 
     def all(self):
-        return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}` ")
+        return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}`")
 
-    def get(self, *condition: Condition, order: str = "id", limit: int = 500):
+    def get(self, *rows):
+        all_rows = ""
+        for row in rows:
+            all_rows += row + ","
+        return self.exec(f"SELECT {all_rows[0:-1]} FROM {self.table_name} `{self.table_name}` ")
+
+    def filter(self, *condition: Condition):
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
         for condition_item in condition:
             instruction = "WHERE" if "WHERE" not in query else "AND"
             query += f"{instruction} {condition_item} "
-        query += f"ORDER BY {order} LIMIT {limit}"
 
         return self.exec(query)
 
@@ -64,6 +62,15 @@ class Table:
 
     def delete(self, commit=False):
         return self.exec(f"DELETE FROM {self.table_name} ", commit)
+
+
+class Table(Query):
+
+    def __init__(self, table_name, table_row: tuple, path_database: str = "main.db"):
+        self.conn = sqlite3.connect(path_database)
+        self.table_name = table_name
+        for row in table_row:
+            setattr(self, row, f"{table_name}.{row}")
 
     def __str__(self):
         return self.table_name
