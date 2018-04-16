@@ -73,8 +73,8 @@ class Table:
             all_values = "".join(f"'{value}'," for value in columns.values())[0:-1]
             return self.exec(f"INSERT INTO {self.table_name} ({all_keys}) VALUES ({all_values})", True)
 
-        def delete(self, commit=False):
-            return self.exec(f"DELETE FROM {self.table_name} ", commit)
+        def delete(self, condition: Condition, commit=False):
+            return self.exec(f"DELETE FROM {self.table_name} WHERE {condition}", commit)
 
     def __str__(self):
         return self.table_name
