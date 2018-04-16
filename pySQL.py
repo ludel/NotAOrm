@@ -1,4 +1,5 @@
-from model import User, Requests, Site
+from model import User, Requests as r, Site
 from resource.condition import Condition as Con, Operator as Op
+from resource.table import Table
 
-print(Requests.filter(Con(Requests.siteId, Op.equ, 18)))
+print(r.query.get(r.siteId))
