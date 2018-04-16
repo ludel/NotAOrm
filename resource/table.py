@@ -6,7 +6,7 @@ from resource.condition import Condition
 class Table:
     path_database = "main.db"
 
-    def __init__(self, table_name, **table_row):
+    def __init__(self, table_name, table_row: tuple):
         self.table_name = table_name
         self.conn = sqlite3.connect(self.path_database)
         for row in table_row:
@@ -24,6 +24,7 @@ class Table:
         return list_of_data
 
     def exec(self, query, commit=False):
+        print(query)
         req = self.conn.execute(query)
         if commit:
             req.execute("COMMIT ")
@@ -31,10 +32,10 @@ class Table:
         return self.fetch_to_dic(req)
 
     def all(self):
-        return self.exec(f"SELECT * FROM {self.table_name} ")
+        return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}` ")
 
     def get(self, *condition: Condition, order: str = "id", limit: int = 500):
-        query = f"SELECT * FROM {self.table_name} "
+        query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
         for condition_item in condition:
             instruction = "WHERE" if "WHERE" not in query else "AND"
             query += f"{instruction} {condition_item} "
@@ -42,8 +43,8 @@ class Table:
 
         return self.exec(query)
 
-    def add(self, table: str, *condition: Condition):
-        query = f"SELECT * FROM {self.table_name} "
+    def add(self, table, *condition: Condition):
+        query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
         for condition_item in condition:
             instruction = "JOIN" if "JOIN" not in query else "AND"
             query += f"{instruction} {table} `{table}` ON {condition_item}"
@@ -64,3 +65,6 @@ class Table:
 
     def delete(self, commit=False):
         return self.exec(f"DELETE FROM {self.table_name} ", commit)
+
+    def __str__(self):
+        return self.table_name

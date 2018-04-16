@@ -1,8 +1,6 @@
-from model import User
+from model import User, Requests, Site
 from resource.condition import Condition as Con, Operator as Op
-from resource.sortEnum import Sort
-
 
 if __name__ == '__main__':
-    u = User.all()
-    print(User.table_row.get("id"))
+    s = Site
+    print(s.add(Requests, Con(Site.id, Op.equ, Requests.siteId)))
