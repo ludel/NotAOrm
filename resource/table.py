@@ -4,12 +4,12 @@ from resource.condition import Condition
 
 
 class Table:
+    path_database = "main.db"
 
-    def __init__(self, table_name, table_row, path_database="main.db"):
+    def __init__(self, table_name, **table_row):
         self.table_name = table_name
         self.table_row = table_row
-        self.path_database = path_database
-        self.conn = sqlite3.connect(path_database)
+        self.conn = sqlite3.connect(self.path_database)
 
     @staticmethod
     def fetch_to_dic(selected):
@@ -32,11 +32,12 @@ class Table:
     def all(self):
         return self.exec(f"SELECT * FROM {self.table_name} ")
 
-    def get(self, *condition: Condition):
+    def get(self, *condition: Condition, order: str = "id", limit: int = 500):
         query = f"SELECT * FROM {self.table_name} "
         for condition_item in condition:
             instruction = "WHERE" if "WHERE" not in query else "AND"
             query += f"{instruction} {condition_item} "
+        query += f"ORDER BY {order} LIMIT {limit}"
 
         return self.exec(query)
 
