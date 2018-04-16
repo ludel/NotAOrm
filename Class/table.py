@@ -5,7 +5,7 @@ from Class.condition import Condition
 
 class Table:
 
-    def __init__(self, table_name, table_row: tuple, path_database: str = "main.db"):
+    def __init__(self, table_name, table_row: tuple, path_database: str = "example.db"):
         self.table_name = table_name
         self.query = self.Query(table_name, path_database)
 
