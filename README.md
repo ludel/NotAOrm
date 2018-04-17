@@ -1,7 +1,7 @@
 # pySQL
 Python methods for managing a SQLite database
 
-# Doc
+# Example
 
 ## Model Example
 ```python
@@ -28,7 +28,7 @@ site.query.get(site.id, site.url)
 
 requests.query.filter(Condition(requests.siteId, Operator.supEq, 3))
 
-requests.query.filter([Condition(Requests.id, Op.sup, 2), Condition(Requests.id, Op.inf, 10)])
+requests.query.filter([Condition(Requests.id, Operator.sup, 2), Condition(Requests.id, Operator.inf, 10)])
 
 requests.query.add(site, Condition(site.id, Operator.inf, requests.siteId))
 
