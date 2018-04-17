@@ -45,15 +45,14 @@ class Table:
                 all_rows += row + ","
             return self.exec(f"SELECT {all_rows[0:-1]} FROM {self.table_name} `{self.table_name}` ")
 
-        def filter(self, *condition: Condition):
+        def filter(self, condition: Condition):
             query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
             for condition_item in condition:
                 instruction = "WHERE" if "WHERE" not in query else "AND"
                 query += f"{instruction} {condition_item} "
-
             return self.exec(query)
 
-        def add(self, table, *condition: Condition):
+        def add(self, table, condition: Condition):
             query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
             for condition_item in condition:
                 instruction = "JOIN" if "JOIN" not in query else "AND"
