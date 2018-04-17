@@ -3,7 +3,7 @@ Python methods for managing a SQLite database
 
 # Example
 
-## Model Example
+## Model
 ```python
 from Class.table import Table
 
