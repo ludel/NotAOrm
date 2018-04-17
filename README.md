@@ -24,7 +24,9 @@ from model import requests, site
 
 requests.query.all()
 
-site.query.get(Condition(site.id, Operator.inf, 2))
+site.query.get(site.id, site.url)
+
+requests.query.filter(Condition(requests.siteId, Operator.supEq, 3))
 
 requests.query.add(site, Condition(site.id, Operator.inf, requests.siteId))
 
