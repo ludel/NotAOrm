@@ -61,12 +61,12 @@ class Table:
 
             return self.exec(query)
 
-        def update(self, **columns):
+        def update(self, condition: Condition, **columns):
             set_value = ""
             for key, value in columns.items():
                 set_value += f"{key} = '{value}',"
 
-            return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} ", True)
+            return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} WHERE {condition}", True)
 
         def insert(self, **columns):
             all_keys = "".join(key + "," for key in columns.keys())[0:-1]
