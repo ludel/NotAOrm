@@ -29,30 +29,30 @@ class Table:
 
             return list_of_data
 
-        def exec(self, query: str, commit: bool = False):
+        def exec(self, query: str, commit: bool = False) -> list:
             req = self.conn.execute(query)
             if commit:
                 req.execute("COMMIT ")
 
             return self.fetch_to_dic(req)
 
-        def all(self):
+        def all(self) -> list:
             return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}`")
 
-        def get(self, *rows):
+        def get(self, *rows) -> list:
             all_rows = ""
             for row in rows:
                 all_rows += row + ","
             return self.exec(f"SELECT {all_rows[0:-1]} FROM {self.table_name} `{self.table_name}` ")
 
-        def filter(self, condition: Condition):
+        def filter(self, condition: Condition) -> list:
             query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
             for condition_item in condition:
                 instruction = "WHERE" if "WHERE" not in query else "AND"
                 query += f"{instruction} {condition_item} "
             return self.exec(query)
 
-        def add(self, table, condition: Condition):
+        def add(self, table, condition: Condition) -> list:
             query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
             for condition_item in condition:
                 instruction = "JOIN" if "JOIN" not in query else "AND"
@@ -60,19 +60,19 @@ class Table:
 
             return self.exec(query)
 
-        def update(self, condition: Condition, **columns):
+        def update(self, condition: Condition, **columns) -> list:
             set_value = ""
             for key, value in columns.items():
                 set_value += f"{key} = '{value}',"
 
             return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} WHERE {condition}", True)
 
-        def insert(self, **columns):
+        def insert(self, **columns) -> list:
             all_keys = "".join(key + "," for key in columns.keys())[0:-1]
             all_values = "".join(f"'{value}'," for value in columns.values())[0:-1]
             return self.exec(f"INSERT INTO {self.table_name} ({all_keys}) VALUES ({all_values})", True)
 
-        def delete(self, condition: Condition, commit=False):
+        def delete(self, condition: Condition, commit=False) -> list:
             return self.exec(f"DELETE FROM {self.table_name} WHERE {condition}", commit)
 
     def __str__(self):
