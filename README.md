@@ -22,19 +22,19 @@ condition = Condition(user.id, Operator.equ, 1)
 ```python
 from model import requests, site
 
-requests.query.all()
+requests.show.all()
 
-site.query.get(site.id, site.url)
+site.show.get(site.id, site.url)
 
-requests.query.filter(Condition(requests.siteId, Operator.supEq, 3))
+requests.show.filter(Condition(requests.siteId, Operator.supEq, 3))
 
-requests.query.filter([Condition(Requests.id, Operator.sup, 2), Condition(Requests.id, Operator.inf, 10)])
+requests.show.filter([Condition(Requests.id, Operator.sup, 2), Condition(Requests.id, Operator.inf, 10)])
 
-requests.query.add(site, Condition(site.id, Operator.inf, requests.siteId))
+requests.show.add(site, Condition(site.id, Operator.inf, requests.siteId))
 
-site.query.insert(url="http://foo.fo")
+site.change.insert(url="http://foo.fo")
 
-site.query.update(Condition(site.id, Operator.equ, 5), url="http://google.com")
+site.change.update(Condition(site.id, Operator.equ, 5), url="http://google.com")
 
-site.query.delete((Condition(site.url, Operator.str, "http://google.com"), commit=True)
+site.change.delete((Condition(site.url, Operator.str, "http://google.com"), commit=True)
 ```
