@@ -19,27 +19,27 @@ class Table:
 
 
 class Row:
-    def __init__(self, name, table_name):
-        self.name = name
+    def __init__(self, row_name, table_name):
+        self.row_name = row_name
         self.table_name = table_name
 
     def __eq__(self, other):
-        return Condition(f"{self.table_name}.{self.name}", Operator.equ, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Operator.equ, other)
 
     def __ne__(self, other):
-        return Condition(f"{self.table_name}.{self.name}", Operator.diff, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Operator.diff, other)
 
     def __lt__(self, other):
-        return Condition(f"{self.table_name}.{self.name}", Operator.inf, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Operator.inf, other)
 
     def __le__(self, other):
-        return Condition(f"{self.table_name}.{self.name}", Operator.infEq, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Operator.infEq, other)
 
     def __gt__(self, other):
-        return Condition(f"{self.table_name}.{self.name}", Operator.sup, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Operator.sup, other)
 
     def __ge__(self, other):
-        return Condition(f"{self.table_name}.{self.name}", Operator.supEq, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Operator.supEq, other)
 
     def __str__(self):
-        return self.name
+        return self.row_name
