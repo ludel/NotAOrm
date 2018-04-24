@@ -41,5 +41,5 @@ class Row:
     def __ge__(self, other):
         return Condition(f"{self.table_name}.{self.row_name}", Operator.supEq, other)
 
-    def __str__(self):
-        return self.row_name
+    def __repr__(self):
+        return f"{self.table_name}.{self.row_name}"

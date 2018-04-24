@@ -18,11 +18,16 @@ class Query:
 
         return list_of_data
 
-    def exec(self, query: str, commit: bool = False) -> list:
+    def exec(self, query: str, **kwargs) -> list:
+        if kwargs.get('group'):
+            query += f" GROUP BY {kwargs.get('group')}"
+        if kwargs.get('order'):
+            query += f" ORDER BY {kwargs.get('order')}"
+        if kwargs.get('limit'):
+            query += f" LIMIT {kwargs.get('limit')}"
         req = self.conn.execute(query)
-        if commit:
+
+        if kwargs.get('commit'):
             req.execute("COMMIT ")
 
         return self.fetch_to_dic(req)
-
-

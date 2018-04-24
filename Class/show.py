@@ -7,24 +7,23 @@ class Show(Query):
         super().__init__(table_name, path_database)
         self.table_name = table_name
 
-    def all(self) -> list:
-        return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}`")
+    def all(self, **kwargs) -> list:
+        return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}`", **kwargs)
 
-    def get(self, *rows) -> list:
+    def get(self, *rows, **kwargs) -> list:
         all_rows = ""
         for row in rows:
-            all_rows += row + ","
+            all_rows += str(row) + ","
 
-        return self.exec(f"SELECT {all_rows[0:-1]} FROM {self.table_name} `{self.table_name}` ")
+        return self.exec(f"SELECT {all_rows[0:-1]} FROM {self.table_name} `{self.table_name}` ", **kwargs)
 
-    def filter(self, condition) -> list:
+    def filter(self, condition, **kwargs) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` " \
                 f"WHERE {condition.sql()} "
-        print(query)
-        return self.exec(query)
+        return self.exec(query, **kwargs)
 
-    def add(self, table, condition) -> list:
+    def add(self, table, condition, **kwargs) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` " \
-                f"{instruction} {table} `{table}` ON {condition.sql()}"
+                f"JOIN {table} `{table}` ON {condition.sql()}"
 
-        return self.exec(query)
+        return self.exec(query, **kwargs)

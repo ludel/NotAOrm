@@ -20,19 +20,19 @@ condition = Condition(user.id, Operator.equ, 1)
 
 ## Application
 ```python
-from model import requests, site
+from model import Requests, Site
 
-requests.show.all()
+print(Requests.show.all(order=Requests.date))
 
-site.show.get(site.id, site.url)
+print(Site.show.get(Site.id, Site.url, limit=2))
 
-requests.show.filter(requests.siteId > 3))
+print(Requests.show.filter(Requests.siteId > 3, group=Requests.siteId))
 
-requests.show.add(site, site.id > requests.siteId))
+print(Requests.show.add(Site, Site.id == Requests.siteId))
 
-site.change.insert(url="http://foo.fo")
+Site.change.insert(url="http://foo.fo")
 
-site.change.update(site.id == 5), url="http://google.com")
+Site.change.update(Site.id >= 5, url="http://google.com")
 
-site.change.delete(site.url == "http://google.com", commit=True)
+Site.change.delete(Site.url == "http://google.com", commit=False)
 ```
