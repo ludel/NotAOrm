@@ -7,15 +7,8 @@ Python methods for managing a SQLite database
 ```python
 from Class.table import Table
 
-requests = Table(table_name="requests", table_row=('id', 'number', 'siteId', 'date'))
-site = Table(table_name="site", table_row=('id', 'url'))
-```
-
-## Condition and Operator
-```python
-from Class.condition import Condition, Operator
-
-condition = Condition(user.id, Operator.equ, 1)
+Requests = Table(table_name="requests", table_row=('id', 'number', 'siteId', 'date'))
+Site = Table(table_name="site", table_row=('id', 'url'))
 ```
 
 ## Application
