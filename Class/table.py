@@ -1,7 +1,6 @@
-from Class.change import Change
-from Class.show import Show
 from Enum.operatorEnum import Operator
 from .condition import Condition
+from .query import Show, Change
 
 
 class Table:
