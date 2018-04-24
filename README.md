@@ -28,7 +28,7 @@ site.show.get(site.id, site.url)
 
 requests.show.filter(requests.siteId > 3))
 
-requests.show.add(site, Condition(site.id, Operator.inf, requests.siteId))
+requests.show.add(site, site.id > requests.siteId))
 
 site.change.insert(url="http://foo.fo")
 
