@@ -1,4 +1,2 @@
-from model import Requests, User, Site
-
-print(Requests.show.filter(Requests.siteId == 18))
-
+from model import Requests
+print(Requests.show.filter(Requests.siteId == 18 or Requests.id == 3))

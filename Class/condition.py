@@ -8,5 +8,5 @@ class Condition:
         self.operator = operator
         self.left = left
 
-    def __str__(self):
+    def sql(self):
         return f"{self.right} {self.operator.value} {self.left}"

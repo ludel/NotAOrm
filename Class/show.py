@@ -19,14 +19,13 @@ class Show(Query):
 
     def filter(self, condition) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
-        instruction = "WHERE" if "WHERE" not in query else "AND"
-        query += f"{instruction} {condition} "
+        query += f"WHERE {condition.sql()} "
 
         return self.exec(query)
 
     def add(self, table, condition) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
         instruction = "JOIN" if "JOIN" not in query else "AND"
-        query += f"{instruction} {table} `{table}` ON {condition}"
+        query += f"{instruction} {table} `{table}` ON {condition.sql()}"
 
         return self.exec(query)

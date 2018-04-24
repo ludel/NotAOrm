@@ -12,7 +12,7 @@ class Change(Query):
         for key, value in columns.items():
             set_value += f"{key} = '{value}',"
 
-        return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} WHERE {condition}", True)
+        return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} WHERE {condition.sql()}", True)
 
     def insert(self, **columns) -> list:
         all_keys = "".join(key + "," for key in columns.keys())[0:-1]
@@ -21,4 +21,4 @@ class Change(Query):
         return self.exec(f"INSERT INTO {self.table_name} ({all_keys}) VALUES ({all_values})", True)
 
     def delete(self, condition, commit=False) -> list:
-        return self.exec(f"DELETE FROM {self.table_name} WHERE {condition}", commit)
+        return self.exec(f"DELETE FROM {self.table_name} WHERE {condition.sql()}", commit)
