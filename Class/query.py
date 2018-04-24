@@ -8,7 +8,7 @@ class Query:
         self.table_name = table_name
 
     @staticmethod
-    def fetch_to_dic(selected):
+    def fetch_to_list(selected):
         list_of_data = []
         for items in selected.fetchall():
             data = {}
@@ -30,7 +30,7 @@ class Query:
         if kwargs.get('commit'):
             req.execute("COMMIT ")
 
-        return self.fetch_to_dic(req)
+        return self.fetch_to_list(req)
 
 
 class Change(Query):
