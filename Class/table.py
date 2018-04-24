@@ -1,16 +1,45 @@
 from Class.change import Change
 from Class.show import Show
+from Enum.operatorEnum import Operator
+from .condition import Condition
 
 
 class Table:
 
-    def __init__(self, table_name, table_row: tuple, path_database: str = "example.db"):
+    def __init__(self, table_name: str, table_row: tuple, path_database: str = "example.db"):
         self.table_name = table_name
         self.show = Show(table_name, path_database)
         self.change = Change(table_name, path_database)
 
         for row in table_row:
-            setattr(self, row, f"{table_name}.{row}")
+            setattr(self, row, Row(row, table_name))
 
     def __str__(self):
         return self.table_name
+
+
+class Row:
+    def __init__(self, name, table_name):
+        self.name = name
+        self.table_name = table_name
+
+    def __eq__(self, other):
+        return Condition(f"{self.table_name}.{self.name}", Operator.equ, other)
+
+    def __ne__(self, other):
+        return Condition(f"{self.table_name}.{self.name}", Operator.diff, other)
+
+    def __lt__(self, other):
+        return Condition(f"{self.table_name}.{self.name}", Operator.inf, other)
+
+    def __le__(self, other):
+        return Condition(f"{self.table_name}.{self.name}", Operator.infEq, other)
+
+    def __gt__(self, other):
+        return Condition(f"{self.table_name}.{self.name}", Operator.sup, other)
+
+    def __ge__(self, other):
+        return Condition(f"{self.table_name}.{self.name}", Operator.supEq, other)
+
+    def __str__(self):
+        return self.name

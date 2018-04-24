@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Operator(Enum):
-    car = "LIKE"
+    str = "LIKE"
     equ = "=="
     sup = ">"
     supEq = ">="

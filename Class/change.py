@@ -1,4 +1,3 @@
-from Class.condition import Condition
 from Class.query import Query
 
 
@@ -8,7 +7,7 @@ class Change(Query):
         super().__init__(table_name, path_database)
         self.table_name = table_name
 
-    def update(self, condition: Condition, **columns) -> list:
+    def update(self, condition, **columns) -> list:
         set_value = ""
         for key, value in columns.items():
             set_value += f"{key} = '{value}',"
@@ -21,5 +20,5 @@ class Change(Query):
 
         return self.exec(f"INSERT INTO {self.table_name} ({all_keys}) VALUES ({all_values})", True)
 
-    def delete(self, condition: Condition, commit=False) -> list:
+    def delete(self, condition, commit=False) -> list:
         return self.exec(f"DELETE FROM {self.table_name} WHERE {condition}", commit)

@@ -1,4 +1,3 @@
-from Class.condition import Condition
 from Class.query import Query
 
 
@@ -18,18 +17,16 @@ class Show(Query):
 
         return self.exec(f"SELECT {all_rows[0:-1]} FROM {self.table_name} `{self.table_name}` ")
 
-    def filter(self, condition: Condition) -> list:
+    def filter(self, condition) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
-        for condition_item in condition:
-            instruction = "WHERE" if "WHERE" not in query else "AND"
-            query += f"{instruction} {condition_item} "
+        instruction = "WHERE" if "WHERE" not in query else "AND"
+        query += f"{instruction} {condition} "
 
         return self.exec(query)
 
-    def add(self, table, condition: Condition) -> list:
+    def add(self, table, condition) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` "
-        for condition_item in condition:
-            instruction = "JOIN" if "JOIN" not in query else "AND"
-            query += f"{instruction} {table} `{table}` ON {condition_item}"
+        instruction = "JOIN" if "JOIN" not in query else "AND"
+        query += f"{instruction} {table} `{table}` ON {condition}"
 
         return self.exec(query)

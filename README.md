@@ -26,15 +26,13 @@ requests.show.all()
 
 site.show.get(site.id, site.url)
 
-requests.show.filter(Condition(requests.siteId, Operator.supEq, 3))
-
-requests.show.filter([Condition(Requests.id, Operator.sup, 2), Condition(Requests.id, Operator.inf, 10)])
+requests.show.filter(requests.siteId > 3))
 
 requests.show.add(site, Condition(site.id, Operator.inf, requests.siteId))
 
 site.change.insert(url="http://foo.fo")
 
-site.change.update(Condition(site.id, Operator.equ, 5), url="http://google.com")
+site.change.update(site.id == 5), url="http://google.com")
 
-site.change.delete((Condition(site.url, Operator.str, "http://google.com"), commit=True)
+site.change.delete(site.url == "http://google.com", commit=True)
 ```

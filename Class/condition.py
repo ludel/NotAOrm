@@ -3,11 +3,10 @@ from Enum.operatorEnum import Operator
 
 class Condition:
 
-    def __init__(self, row, operator: Operator, verification):
-        self.row_from = row
+    def __init__(self, right, operator: Operator, left):
+        self.right = right
         self.operator = operator
-        self.row_to = verification
+        self.left = left
 
     def __str__(self):
-        return f"{self.row_from} {self.operator.value} {self.row_to}"
-
+        return f"{self.right} {self.operator.value} {self.left}"
