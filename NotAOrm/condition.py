@@ -9,4 +9,6 @@ class Condition:
         self.left = left
 
     def sql(self):
+        if type(self.left) == str:
+            self.left = f"'{self.left}'"
         return f"{self.right} {self.operator.value} {self.left}"
