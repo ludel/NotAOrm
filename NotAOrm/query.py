@@ -66,15 +66,14 @@ class Show(Query):
         return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}`", **kwargs)
 
     def get(self, *rows, **kwargs) -> list:
-        all_rows = ""
-        for row in rows:
-            all_rows += str(row) + ","
+        all_rows = ",".join(rows)
 
-        return self.exec(f"SELECT {all_rows[0:-1]} FROM {self.table_name} `{self.table_name}` ", **kwargs)
+        return self.exec(f"SELECT {all_rows} FROM {self.table_name} `{self.table_name}` ", **kwargs)
 
     def filter(self, condition, **kwargs) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` " \
-                f"WHERE {condition.sql()} "
+                f"WHERE {condition.sql()}"
+
         return self.exec(query, **kwargs)
 
     def add(self, table, condition, **kwargs) -> list:
