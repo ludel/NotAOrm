@@ -47,8 +47,8 @@ class Change(Query):
         return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} WHERE {condition.sql()}", commit=True)
 
     def insert(self, **columns) -> list:
-        all_keys = "".join(key + "," for key in columns.keys())[0:-1]
-        all_values = "".join(f"'{value}'," for value in columns.values())[0:-1]
+        all_keys = ",".join(key + "," for key in columns.keys())
+        all_values = ",".join(f"'{value}'" for value in columns.values())
 
         return self.exec(f"INSERT INTO {self.table_name} ({all_keys}) VALUES ({all_values})", commit=True)
 
