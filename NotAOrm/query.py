@@ -47,13 +47,12 @@ class Change(Query):
         return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} WHERE {condition.sql()}", commit=True)
 
     def insert(self, **columns) -> list:
-        all_keys = ",".join(key + "," for key in columns.keys())
+        all_keys = ",".join(key for key in columns.keys())
         all_values = ",".join(f"'{value}'" for value in columns.values())
-
         return self.exec(f"INSERT INTO {self.table_name} ({all_keys}) VALUES ({all_values})", commit=True)
 
     def delete(self, condition, commit=False) -> list:
-        return self.exec(f"DELETE FROM {self.table_name} WHERE '{condition.sql()}'", commit=commit)
+        return self.exec(f"DELETE FROM {self.table_name} WHERE {condition.sql()}", commit=commit)
 
 
 class Show(Query):
@@ -66,7 +65,7 @@ class Show(Query):
         return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}`", **kwargs)
 
     def get(self, *rows, **kwargs) -> list:
-        all_rows = ",".join(rows)
+        all_rows = ",".join(map(str, rows))
 
         return self.exec(f"SELECT {all_rows} FROM {self.table_name} `{self.table_name}` ", **kwargs)
 
