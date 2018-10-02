@@ -1,4 +1,4 @@
-from Class.table import Table
+from NotAOrm import Table
 
 User = Table(table_name="user", table_row=('id', 'pseudo', 'password'))
 Requests = Table(table_name="requests", table_row=('id', 'number', 'siteId', 'date'))
