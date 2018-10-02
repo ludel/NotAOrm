@@ -5,10 +5,10 @@ from NotAOrm.query import Show, Change
 
 class Table:
 
-    def __init__(self, table_name: str, table_row: tuple, path_database: str = "example.db"):
+    def __init__(self, table_name: str, table_row: tuple, database: str = "example.db"):
         self.table_name = table_name
-        self.show = Show(table_name, path_database)
-        self.change = Change(table_name, path_database)
+        self.show = Show(table_name, database)
+        self.change = Change(table_name, database)
 
         for row in table_row:
             setattr(self, row, Row(row, table_name))
