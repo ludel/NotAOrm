@@ -1,0 +1,9 @@
+SELECT_ALL = "SELECT * FROM `{}`"
+
+SELECT_WHERE = "SELECT * FROM `{}` WHERE {}"
+
+UPDATE = "UPDATE `{}` SET {} WHERE {}"
+
+INSERT = "INSERT INTO `{}` ({}) VALUES ({})"
+
+DELETE = "DELETE FROM {} WHERE {}"

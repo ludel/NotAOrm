@@ -1,4 +1,5 @@
 import sqlite3
+from NotAOrm.SQLQueries import DELETE, INSERT, SELECT_ALL, SELECT_WHERE, UPDATE
 
 
 class Query:
@@ -20,11 +21,11 @@ class Query:
 
     def exec(self, query: str, **kwargs) -> list:
         if kwargs.get('group'):
-            query += f" GROUP BY {kwargs.get('group')}"
+            query += f" GROUP BY {kwargs['group']}"
         if kwargs.get('order'):
-            query += f" ORDER BY {kwargs.get('order')}"
+            query += f" ORDER BY {kwargs['order']}"
         if kwargs.get('limit'):
-            query += f" LIMIT {kwargs.get('limit')}"
+            query += f" LIMIT {kwargs['limit']}"
         req = self.conn.execute(query)
 
         if kwargs.get('commit'):
@@ -44,15 +45,15 @@ class Change(Query):
         for key, value in columns.items():
             set_value += f"{key} = '{value}',"
 
-        return self.exec(f"UPDATE {self.table_name} SET {set_value[0:-1]} WHERE {condition.sql()}", commit=True)
+        return self.exec(UPDATE.format(self.table_name, set_value[0:-1], condition.sql()), commit=True)
 
     def insert(self, **columns) -> list:
         all_keys = ",".join(key for key in columns.keys())
         all_values = ",".join(f"'{value}'" for value in columns.values())
-        return self.exec(f"INSERT INTO {self.table_name} ({all_keys}) VALUES ({all_values})", commit=True)
+        return self.exec(INSERT.format(self.table_name, all_keys, all_values), commit=True)
 
     def delete(self, condition, commit=False) -> list:
-        return self.exec(f"DELETE FROM {self.table_name} WHERE {condition.sql()}", commit=commit)
+        return self.exec(DELETE.format(self.table_name, condition.sql()), commit=commit)
 
 
 class Show(Query):
@@ -62,18 +63,10 @@ class Show(Query):
         self.table_name = table_name
 
     def all(self, **kwargs) -> list:
-        return self.exec(f"SELECT * FROM {self.table_name} `{self.table_name}`", **kwargs)
+        return self.exec(SELECT_ALL.format(self.table_name), **kwargs)
 
-    def get(self, *rows, **kwargs) -> list:
-        all_rows = ",".join(map(str, rows))
-
-        return self.exec(f"SELECT {all_rows} FROM {self.table_name} `{self.table_name}` ", **kwargs)
-
-    def filter(self, condition, **kwargs) -> list:
-        query = f"SELECT * FROM {self.table_name} `{self.table_name}` " \
-                f"WHERE {condition.sql()}"
-
-        return self.exec(query, **kwargs)
+    def get(self, condition, **kwargs) -> list:
+        return self.exec(SELECT_WHERE.format(self.table_name, condition.sql()), **kwargs)
 
     def add(self, table, condition, **kwargs) -> list:
         query = f"SELECT * FROM {self.table_name} `{self.table_name}` " \
