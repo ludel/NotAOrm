@@ -5,7 +5,7 @@ from NotAOrm.query import Show, Change
 
 class Table:
 
-    def __init__(self, table_name: str, table_row: tuple, database: str = "example.db"):
+    def __init__(self, table_name: str, table_row: tuple, database):
         self.table_name = table_name
         self.show = Show(table_name, database)
         self.change = Change(table_name, database)
