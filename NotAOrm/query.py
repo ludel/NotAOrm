@@ -68,8 +68,3 @@ class Show(Query):
     def get(self, condition, **kwargs) -> list:
         return self.exec(SELECT_WHERE.format(self.table_name, condition.sql()), **kwargs)
 
-    def add(self, table, condition, **kwargs) -> list:
-        query = f"SELECT * FROM {self.table_name} `{self.table_name}` " \
-                f"JOIN {table} `{table}` ON {condition.sql()}"
-
-        return self.exec(query, **kwargs)
