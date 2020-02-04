@@ -3,12 +3,11 @@ from NotAOrm.Enum.operatorEnum import Operator
 
 class Condition:
 
-    def __init__(self, right, operator: Operator, left):
-        self.right = right
-        self.operator = operator
+    def __init__(self, left, operator: Operator, right):
         self.left = left
+        self.operator = operator
+        self.right = right
 
-    def sql(self):
-        if type(self.left) == str:
-            self.left = f"'{self.left}'"
-        return f"{self.right} {self.operator.value} {self.left}"
+    @property
+    def first_part(self):
+        return self.left, self.operator.value

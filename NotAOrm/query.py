@@ -1,70 +1,96 @@
 import sqlite3
-from NotAOrm.SQLQueries import DELETE, INSERT, SELECT_ALL, SELECT_WHERE, UPDATE
+from collections import namedtuple
+from typing import Generator
+
+from NotAOrm import SQLQueries
+from condition import Condition
 
 
 class Query:
 
     def __init__(self, table_name, path_database):
-        self.conn = sqlite3.connect(path_database)
         self.table_name = table_name
+        self._conn = sqlite3.connect(path_database)
+
+    def _get_table_object(self, descriptions):
+        return namedtuple(self.table_name, [desc[0] for desc in descriptions])
 
     @staticmethod
-    def fetch_to_list(selected):
-        list_of_data = []
-        for items in selected.fetchall():
-            data = {}
-            for key, value in zip(selected.description, items):
-                data[key[0]] = value
-            list_of_data.append(data)
+    def _append_option(query, **kwargs):
+        for key, value in kwargs.items():
+            if not hasattr(SQLQueries, key.upper()):
+                raise NotImplementedError('Option not implement')
 
-        return list_of_data
+            query += getattr(SQLQueries, key.upper()).format(value)
+        return query
 
-    def exec(self, query: str, **kwargs) -> list:
-        if kwargs.get('group'):
-            query += f" GROUP BY {kwargs['group']}"
-        if kwargs.get('order'):
-            query += f" ORDER BY {kwargs['order']}"
-        if kwargs.get('limit'):
-            query += f" LIMIT {kwargs['limit']}"
-        req = self.conn.execute(query)
+    def _fetch(self, query: str, *args, **kwargs):
+        columns = kwargs.pop('columns')
+        if columns is not '*':
+            columns = ','.join(repr(c) for c in columns) if type(columns) is list else repr(columns)
 
-        if kwargs.get('commit'):
-            req.execute("COMMIT ")
+        full_query = self._append_option(query, **kwargs).replace('COLUMNS_NAME', columns)
+        res = self.exec(full_query, *args,  commit=False)
+        table_obj = self._get_table_object(res.description)
 
-        return self.fetch_to_list(req)
+        return res, table_obj
+
+    def _fetch_all(self, query: str, *args, **kwargs):
+        res, table_obj = self._fetch(query, *args, **kwargs)
+
+        for items in res.fetchall():
+            yield table_obj(*items)
+
+    def _fetch_one(self, query: str, *args, **kwargs):
+        res, table_obj = self._fetch(query, *args, **kwargs)
+
+        fetch = res.fetchone()
+        if fetch is not None:
+            return table_obj(*fetch)
+
+    def exec(self, query: str, *args, commit=True):
+        query = query.replace('TABLE_NAME', self.table_name)
+        res = self._conn.execute(query, args)
+
+        if commit:
+            self._conn.commit()
+
+        return res
 
 
 class Change(Query):
+    def update(self, condition, **columns) -> sqlite3.Cursor:
+        columns_to_set = ",".join(f'{key} = ?' for key in columns.keys())
+        values = list(columns.values()) + [condition.right]
 
-    def __init__(self, table_name, path_database):
-        super().__init__(table_name, path_database)
-        self.table_name = table_name
+        return self.exec(SQLQueries.UPDATE.format(columns_to_set, *condition.first_part), *values)
 
-    def update(self, condition, **columns) -> list:
-        set_value = ""
-        for key, value in columns.items():
-            set_value += f"{key} = '{value}',"
+    def insert(self, **columns) -> sqlite3.Cursor:
+        keys = ",".join(columns.keys())
+        values = ','.join('?' * len(columns.values()))
 
-        return self.exec(UPDATE.format(self.table_name, set_value[0:-1], condition.sql()), commit=True)
+        return self.exec(SQLQueries.INSERT.format(keys, values), *columns.values())
 
-    def insert(self, **columns) -> list:
-        all_keys = ",".join(key for key in columns.keys())
-        all_values = ",".join(f"'{value}'" for value in columns.values())
-        return self.exec(INSERT.format(self.table_name, all_keys, all_values), commit=True)
-
-    def delete(self, condition, commit=False) -> list:
-        return self.exec(DELETE.format(self.table_name, condition.sql()), commit=commit)
+    def delete(self, condition: Condition, commit=False) -> sqlite3.Cursor:
+        return self.exec(SQLQueries.DELETE.format(*condition.first_part), condition.right, commit=commit)
 
 
 class Show(Query):
+    def all(self, columns='*', **options) -> Generator:
+        return self._fetch_all(SQLQueries.SELECT_ALL, columns=columns, **options)
 
-    def __init__(self, table_name, path_database):
-        super().__init__(table_name, path_database)
-        self.table_name = table_name
+    def filter(self, condition: Condition, columns='*', **options) -> Generator:
+        return self._fetch_all(
+            SQLQueries.SELECT_WHERE.format(*condition.first_part),
+            condition.right,
+            columns=columns,
+            **options
+        )
 
-    def all(self, **kwargs) -> list:
-        return self.exec(SELECT_ALL.format(self.table_name), **kwargs)
-
-    def get(self, condition, **kwargs) -> list:
-        return self.exec(SELECT_WHERE.format(self.table_name, condition.sql()), **kwargs)
-
+    def get(self, condition: Condition, columns='*', **options) -> tuple:
+        return self._fetch_one(
+            SQLQueries.SELECT_WHERE.format(*condition.first_part),
+            condition.right,
+            columns=columns,
+            **options
+        )
