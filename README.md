@@ -9,7 +9,7 @@ There are no hard dependencies other than the Python standard library. NotAOrm r
 
 ## Examples
 
-### Create a new model and set
+### Create a new model
 ```python
 from NotAOrm.table import Table
 
