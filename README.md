@@ -50,7 +50,7 @@ for site in filter_sites:
     print('=>', site.id, sep='\t')
 ```
 
-With multiple conditions
+With several conditions
 ```python
 condition_or = (Site.visitor >= 10) | (site.id > 2)
 Site.show.filter(condition_or, Site.id)
