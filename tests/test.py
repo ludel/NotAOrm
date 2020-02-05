@@ -69,7 +69,6 @@ class Test(unittest.TestCase):
         self.assertEqual(len(list(last)), 1)
 
     def test_group_by(self):
-        print(list(self.site.show.all()))
         site = self.site.show.get(
             self.site.url == 'aaa.com',
             self.site.visitor.sum,

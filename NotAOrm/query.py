@@ -50,8 +50,6 @@ class Query:
 
     def exec(self, query: str, *args, commit=True):
         query = query.replace('TABLE_NAME', self.table_name)
-        print(query)
-        print(args)
         res = self._conn.execute(query, args)
 
         if commit:
