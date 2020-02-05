@@ -31,25 +31,25 @@ class Row:
         return MathFunction('COUNT', self.__repr__(), f'count_{self.row_name}')
 
     def __eq__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Comparator.equ, '?', [other])
+        return Condition(self.__repr__(), Comparator.equ, '?', [other])
 
     def like(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Comparator.supEq, '?', [other])
+        return Condition(self.__repr__(), Comparator.supEq, '?', [other])
 
     def __ne__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Comparator.diff, '?', [other])
+        return Condition(self.__repr__(), Comparator.diff, '?', [other])
 
     def __lt__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Comparator.inf, '?', [other])
+        return Condition(self.__repr__(), Comparator.inf, '?', [other])
 
     def __le__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Comparator.infEq, '?', [other])
+        return Condition(self.__repr__(), Comparator.infEq, '?', [other])
 
     def __gt__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Comparator.sup, '?', [other])
+        return Condition(self.__repr__(), Comparator.sup, '?', [other])
 
     def __ge__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Comparator.supEq, '?', [other])
+        return Condition(self.__repr__(), Comparator.supEq, '?', [other])
 
     def __repr__(self):
         return f'{self.table_name}.{self.row_name}'
