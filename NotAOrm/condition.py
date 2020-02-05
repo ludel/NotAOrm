@@ -1,9 +1,11 @@
-from NotAOrm.Enum.operatorEnum import Conditional
+from typing import Union
+
+from NotAOrm.Enum.operatorEnum import Conditional, Comparator
 from NotAOrm.SQLQueries import WHERE
 
 
 class Condition:
-    def __init__(self, left, operator, right, values: list):
+    def __init__(self, left: str, operator: Union[Conditional, Comparator], right: str, values: list):
         self.left_side = WHERE.format(left, operator.value, right)
         self.values = values
 

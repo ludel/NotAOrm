@@ -12,11 +12,11 @@ class Query:
         self.table_name = table_name
         self._conn = sqlite3.connect(path_database)
 
-    def _get_table_object(self, descriptions):
+    def _get_table_object(self, descriptions: tuple):
         return namedtuple(self.table_name, [desc[0] for desc in descriptions])
 
     @staticmethod
-    def _append_option(query, **kwargs):
+    def _append_option(query: str, **kwargs):
         for key, value in kwargs.items():
             if not hasattr(SQLQueries, key.upper()):
                 raise NotImplementedError('Option not implement')
@@ -30,7 +30,7 @@ class Query:
             columns = ','.join(repr(c) for c in columns) if type(columns) is list else repr(columns)
 
         full_query = self._append_option(query, **kwargs).replace('COLUMNS_NAME', columns)
-        res = self.exec(full_query, *args,  commit=False)
+        res = self.exec(full_query, *args, commit=False)
         table_obj = self._get_table_object(res.description)
 
         return res, table_obj
