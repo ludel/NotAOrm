@@ -15,7 +15,13 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.site.change._conn.executescript("""
+            DELETE FROM site;
             insert into site ('url', 'visitor') values ('test.com', 10);
+            insert into site ('url', 'visitor') values ('google.com', 1000);
+            insert into site ('url', 'visitor') values ('google2.com', 100);
+            insert into site ('url', 'visitor') values ('aaa.com', 15);
+            insert into site ('url', 'visitor') values ('aaa.com', 5);
+            insert into site ('url', 'visitor') values ('bbb.com', 5);
         """)
         self.site.change._conn.commit()
 
@@ -26,14 +32,22 @@ class Test(unittest.TestCase):
         test_url = self.site.show.get(self.site.url == 'test.com')
         self.assertEqual(test_url.url, 'test.com')
 
+    def test_get_conditional_and(self):
+        conditions = (self.site.url == 'aaa.com') & (self.site.visitor == 5) & (self.site.id >= 0)
+        site = self.site.show.get(conditions)
+        self.assertEqual(site.url, 'aaa.com')
+        self.assertEqual(site.visitor, 5)
+
+    def test_get_conditional_or(self):
+        conditions = (self.site.url == 'google.com') | (self.site.visitor == 5)
+        sites = self.site.show.filter(conditions)
+        self.assertEqual(len(list(sites)), 3)
+
     def test_insert(self):
-        self.site.change.insert(url='google.com')
-        self.site.change.insert(url='google2.com')
-        print(list(self.site.show.filter(self.site.url.like('goo'))))
-        self.assertIsNotNone(self.site.show.get(self.site.url == 'google.com'))
+        self.site.change.insert(url='facebook.com')
+        self.assertIsNotNone(self.site.show.get(self.site.url == 'facebook.com'))
 
     def test_filter(self):
-        self.test_insert()
         test_url = self.site.show.filter(self.site.id >= 0)
         self.assertGreater(len(list(test_url)), 1)
 
@@ -47,23 +61,15 @@ class Test(unittest.TestCase):
         self.assertIsNone(self.site.show.get(self.site.url == 'test.com'))
 
     def test_order_by(self):
-        self.site.change.insert(url='aaa.com')
-        self.site.change.insert(url="bbb.com")
-
         latest = self.site.show.filter(self.site.id > 0, order_by=self.site.url)
         self.assertEqual(list(latest)[0].url, 'aaa.com')
 
     def test_limit(self):
-        self.site.change.insert(url='aaa.com')
-        self.site.change.insert(url="bbb.com")
-
         last = self.site.show.all(limit=1)
         self.assertEqual(len(list(last)), 1)
 
     def test_group_by(self):
-        self.site.change.insert(url='aaa.com', visitor=10)
-        self.site.change.insert(url="aaa.com", visitor=10)
-
+        print(list(self.site.show.all()))
         site = self.site.show.get(
             self.site.url == 'aaa.com',
             self.site.visitor.sum,

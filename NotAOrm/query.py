@@ -50,6 +50,8 @@ class Query:
 
     def exec(self, query: str, *args, commit=True):
         query = query.replace('TABLE_NAME', self.table_name)
+        print(query)
+        print(args)
         res = self._conn.execute(query, args)
 
         if commit:
@@ -61,9 +63,9 @@ class Query:
 class Change(Query):
     def update(self, condition, **columns) -> sqlite3.Cursor:
         columns_to_set = ",".join(f'{key} = ?' for key in columns.keys())
-        values = list(columns.values()) + [condition.right]
+        values = list(columns.values()) + condition.values
 
-        return self.exec(SQLQueries.UPDATE.format(columns_to_set, *condition.first_part), *values)
+        return self.exec(SQLQueries.UPDATE.format(columns_to_set, condition.left_side), *values)
 
     def insert(self, **columns) -> sqlite3.Cursor:
         keys = ",".join(columns.keys())
@@ -72,7 +74,7 @@ class Change(Query):
         return self.exec(SQLQueries.INSERT.format(keys, values), *columns.values())
 
     def delete(self, condition: Condition, commit=False) -> sqlite3.Cursor:
-        return self.exec(SQLQueries.DELETE.format(*condition.first_part), condition.right, commit=commit)
+        return self.exec(SQLQueries.DELETE.format(condition.left_side), *condition.values, commit=commit)
 
 
 class Show(Query):
@@ -81,16 +83,16 @@ class Show(Query):
 
     def filter(self, condition: Condition, columns='*', **options) -> Generator:
         return self._fetch_all(
-            SQLQueries.SELECT_WHERE.format(*condition.first_part),
-            condition.right,
+            SQLQueries.SELECT_WHERE.format(condition.left_side),
+            *condition.values,
             columns=columns,
             **options
         )
 
     def get(self, condition: Condition, columns='*', **options) -> tuple:
         return self._fetch_one(
-            SQLQueries.SELECT_WHERE.format(*condition.first_part),
-            condition.right,
+            SQLQueries.SELECT_WHERE.format(condition.left_side),
+            *condition.values,
             columns=columns,
             **options
         )

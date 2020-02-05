@@ -50,6 +50,15 @@ for site in filter_sites:
     print('=>', site.id, sep='\t')
 ```
 
+With multiple conditions
+```python
+condition_or = (Site.visitor >= 10) | (site.id > 2)
+Site.show.filter(condition_or, Site.id)
+
+condition_and = (Site.visitor >= 10) & (site.id > 2)
+Site.show.filter(condition_and, Site.id)
+```
+
 #### Group by and math methods
 - By SUM
 ```python

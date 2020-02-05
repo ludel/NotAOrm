@@ -1,5 +1,5 @@
 from NotAOrm import database, SQLQueries
-from NotAOrm.Enum.operatorEnum import Operator
+from NotAOrm.Enum.operatorEnum import Comparator
 from NotAOrm.condition import Condition
 from NotAOrm.query import Show, Change
 
@@ -31,25 +31,25 @@ class Row:
         return MathFunction('COUNT', self.__repr__(), f'count_{self.row_name}')
 
     def __eq__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Operator.equ, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Comparator.equ, '?', [other])
 
     def like(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Operator.supEq, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Comparator.supEq, '?', [other])
 
     def __ne__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Operator.diff, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Comparator.diff, '?', [other])
 
     def __lt__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Operator.inf, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Comparator.inf, '?', [other])
 
     def __le__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Operator.infEq, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Comparator.infEq, '?', [other])
 
     def __gt__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Operator.sup, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Comparator.sup, '?', [other])
 
     def __ge__(self, other):
-        return Condition(f"{self.table_name}.{self.row_name}", Operator.supEq, other)
+        return Condition(f"{self.table_name}.{self.row_name}", Comparator.supEq, '?', [other])
 
     def __repr__(self):
         return f'{self.table_name}.{self.row_name}'

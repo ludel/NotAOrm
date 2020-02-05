@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Operator(Enum):
+class Comparator(Enum):
     str = "LIKE"
     equ = "=="
     sup = ">"
@@ -10,3 +10,7 @@ class Operator(Enum):
     infEq = "<="
     diff = "!="
 
+
+class Conditional(Enum):
+    and_ = ' AND '
+    or_ = ' OR '
