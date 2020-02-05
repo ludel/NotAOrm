@@ -27,7 +27,7 @@ Site.show.get(Site.url == 'google.com')
 ```
 or if we want specific columns
 ```python
-Site.show.get(Site.url == 'google.com', [Site.url, Site.date])
+Site.show.get(Site.url == 'google.com', columns=[Site.url, Site.date])
 ```
 
 #### Get all elements
