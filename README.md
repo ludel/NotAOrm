@@ -20,9 +20,9 @@ DATE | `datetime.date` | `Date` | `not_null`, `unique`, `default` | if default a
 TIMESTAMP | `datetime.datetime` | `Datetime` | `not_null`, `unique`, `default` | Same as `Date`
 BOOLEAN | `bool` | `Bool` | `not_null`, `unique`, `default`
 
-### Examples
+## Examples
 
-#### Create a new model
+### Create a new model
 ```python
 import NotAOrm
 from NotAOrm.table import Table
@@ -39,9 +39,9 @@ site = Table('site', table_row=(Int('id', primary_key=True, not_null=True),
 site.create()
 ```
 
-#### Show methods
+### Show methods
 
-##### Get one element
+#### Get one element
 ```python
 site.show.get(site.url == 'google.com')
 ```
@@ -50,7 +50,7 @@ or if we want specific columns
 site.show.get(site.url == 'google.com', columns=[site.url, site.last_check])
 ```
 
-##### Get all elements
+#### Get all elements
 ```python
 all_sites = site.show.all()
 for site in all_sites:
@@ -64,7 +64,7 @@ order_asc_sites = site.show.all(order_by=site.last_check, limit=3)
 order_desc_sites = site.show.all(order_by_desc=site.last_check, limit=3)
 ```
 
-##### Filter by where clause
+#### Filter by where clause
 ```python
 filter_sites = site.show.filter(site.visitor >= 10, site.id)
 for site in filter_sites:
@@ -80,29 +80,29 @@ condition_and = (site.visitor >= 10) & (site.id > 2)
 site.show.filter(condition_and, site.id)
 ```
 
-#### Group by and math methods
-##### By SUM
+### Group by and math methods
+#### By SUM
 ```python
 sites_visitor = site.show.all(site.visitor.sum, group_by=site.last_check)
 ```
-##### By COUNT
+#### By COUNT
 ```python
 sites_count = site.show.all(site.visitor.count, group_by=site.last_check)
 ```
 
-#### Change methods
+### Change methods
 
-##### Insert 
+#### Insert 
 ```python
 site.change.insert(url='google.com')
 ```
 
-##### Update 
+#### Update 
 ```python
 site.change.update(site.url.is_like('bing%'), url='google.com')
 ```
 
-##### Delete 
+#### Delete 
 ```python
 site.change.delete(site.visitor == 0, commit=True)
 ```
