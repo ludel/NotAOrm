@@ -1,11 +1,19 @@
 import os
 import unittest
 
+import NotAOrm
+from NotAOrm.datatype import Int, Varchar
 from NotAOrm.table import Table
 
+NotAOrm.database = 'test.db'
 
-class Test(unittest.TestCase):
-    site = Table(table_name="site", table_row=('id', 'url', 'visitor'))
+
+class TestChange(unittest.TestCase):
+    site = Table(table_name='site', table_row=(
+        Int('id', primary_key=True),
+        Varchar('url', length=255),
+        Int('visitor')
+    ))
 
     @classmethod
     def setUpClass(cls):
@@ -52,7 +60,7 @@ class Test(unittest.TestCase):
         self.assertGreater(len(list(test_url)), 1)
 
     def test_update(self):
-        self.site.change.update(self.site.url == 'test.com', url='test2.com')
+        self.site.change.update(self.site.url.is_like('test.c%'), url='test2.com')
         self.assertIsNone(self.site.show.get(self.site.url == 'test.com'))
         self.assertIsNotNone(self.site.show.get(self.site.url == 'test2.com'))
 
@@ -61,8 +69,11 @@ class Test(unittest.TestCase):
         self.assertIsNone(self.site.show.get(self.site.url == 'test.com'))
 
     def test_order_by(self):
-        latest = self.site.show.filter(self.site.id > 0, order_by=self.site.url)
+        latest = self.site.show.filter(self.site.visitor == 5, order_by=self.site.id)
         self.assertEqual(list(latest)[0].url, 'aaa.com')
+
+        first = self.site.show.filter(self.site.visitor == 5, order_by_desc=self.site.id)
+        self.assertEqual(list(first)[0].url, 'bbb.com')
 
     def test_limit(self):
         last = self.site.show.all(limit=1)
@@ -84,6 +95,12 @@ class Test(unittest.TestCase):
 
         self.assertEqual(site.count_visitor, 2)
 
+    def test_first(self):
+        self.assertEqual(self.site.show.first().url, 'test.com')
+
+    def test_last(self):
+        self.assertEqual(self.site.show.last().url, 'bbb.com')
+
     @classmethod
     def tearDownClass(cls):
-        os.remove('db.sqlite')
+        os.remove(NotAOrm.database)
