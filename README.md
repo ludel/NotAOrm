@@ -7,83 +7,104 @@ A sample python library for managing a SQLite database
 
 There are no hard dependencies other than the Python standard library. NotAOrm run with python 3.6+.
 
-## Examples
+## Doc
 
-### Create a new model
+### Data types list
+SQL | Python | lib | Args | Note
+--- | --- | --- | --- | ---
+INTEGER | `int` | `Int` |  `not_null`, `unique`, `default`, `primary_key` | Automatic incrementation is activated when the primary_key argument is true
+FLOAT | `float` | `Float` | `not_null`, `unique`, `default`
+VARCHAR | `str` | `Varchar` | `not_null`, `unique`, `default`, `length` | By default length is 255
+TEXT | `str` | `Text` | `length`, `not_null`, `unique`, `default` | By default length is 5000
+DATE | `datetime.date` | `Date` | `not_null`, `unique`, `default` | if default argument is set to `now`, the date will be automatically generate  
+TIMESTAMP | `datetime.datetime` | `Datetime` | `not_null`, `unique`, `default` | Same as `Date`
+BOOLEAN | `bool` | `Bool` | `not_null`, `unique`, `default`
+
+### Examples
+
+#### Create a new model
 ```python
+import NotAOrm
 from NotAOrm.table import Table
+from NotAOrm.datatype import Int, Varchar, Date
+
+NotAOrm.database = 'test.db'
 
 
-Site = Table(table_name='site', table_row=('id', 'url', 'visitor', 'date'))
+site = Table('site', table_row=(Int('id', primary_key=True, not_null=True),
+                                Varchar('url', length=255, unique=True, not_null=True),
+                                Int('visitor', default=0),
+                                Date('last_check', default='now')))
+
+site.create()
 ```
 
-Make sure you have created the table `site` before.
+#### Show methods
 
-### Show methods
-
-#### Get one element
+##### Get one element
 ```python
-Site.show.get(Site.url == 'google.com')
+site.show.get(site.url == 'google.com')
 ```
 or if we want specific columns
 ```python
-Site.show.get(Site.url == 'google.com', columns=[Site.url, Site.date])
+site.show.get(site.url == 'google.com', columns=[site.url, site.last_check])
 ```
 
-#### Get all elements
+##### Get all elements
 ```python
-all_sites = Site.show.all()
+all_sites = site.show.all()
 for site in all_sites:
-    print('=>', site.id, site.url, site.visitor, site.date, sep='\t')
+    print('=>', site.id, site.url, site.visitor, site.last_check, sep='\t')
 ```
 
 We can order and limit the request
 
 ```python
-last_sites = Site.show.all(order_by=Site.date, limit=3)
+order_asc_sites = site.show.all(order_by=site.last_check, limit=3)
+order_desc_sites = site.show.all(order_by_desc=site.last_check, limit=3)
 ```
 
-#### Filter by where clause
+##### Filter by where clause
 ```python
-filter_sites = Site.show.filter(Site.visitor >= 10, Site.id)
+filter_sites = site.show.filter(site.visitor >= 10, site.id)
 for site in filter_sites:
     print('=>', site.id, sep='\t')
 ```
 
 With several conditions
 ```python
-condition_or = (Site.visitor >= 10) | (site.id > 2)
-Site.show.filter(condition_or, Site.id)
+condition_or = (site.visitor >= 10) | (site.id > 2)
+site.show.filter(condition_or, site.id)
 
-condition_and = (Site.visitor >= 10) & (site.id > 2)
-Site.show.filter(condition_and, Site.id)
+condition_and = (site.visitor >= 10) & (site.id > 2)
+site.show.filter(condition_and, site.id)
 ```
 
 #### Group by and math methods
-- By SUM
+##### By SUM
 ```python
-sites_visitor = Site.show.all(Site.visitor.sum, group_by=Site.date)
+sites_visitor = site.show.all(site.visitor.sum, group_by=site.last_check)
 ```
-- By COUNT
+##### By COUNT
 ```python
-sites_count = Site.show.all(Site.visitor.count, group_by=Site.date)
-```
-
-### Change methods
-
-#### Insert 
-```python
-Site.change.insert(url='google.com')
+sites_count = site.show.all(site.visitor.count, group_by=site.last_check)
 ```
 
-#### Update 
+#### Change methods
+
+##### Insert 
 ```python
-Site.change.update(Site.url.like('bing'), url='google.com')
+site.change.insert(url='google.com')
 ```
 
-#### Delete 
+##### Update 
 ```python
-Site.change.delete(Site.visitor == 0, commit=True)
+site.change.update(site.url.is_like('bing%'), url='google.com')
+```
+
+##### Delete 
+```python
+site.change.delete(site.visitor == 0, commit=True)
 ```
 By default in the delete method, commit is set to false 
 
