@@ -95,6 +95,10 @@ class TestChange(unittest.TestCase):
 
         self.assertEqual(site.count_visitor, 2)
 
+    def test_pk(self):
+        site = self.site.show.get(self.site.pk == 1)
+        self.assertEqual(site.id, 1)
+
     def test_first(self):
         self.assertEqual(self.site.show.first().url, 'test.com')
 

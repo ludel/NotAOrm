@@ -26,7 +26,7 @@ class TestCreationDB(unittest.TestCase):
     def setUp(self):
         self.site.change.delete(self.site.id > 0, commit=True)
 
-    def test_pk(self):
+    def test_id(self):
         self.site.change.insert(content='great size', url='test.com')
         self.site.change.insert(content='great size too', url='test2.com')
         first = self.site.show.first()
