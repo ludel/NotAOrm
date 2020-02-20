@@ -3,9 +3,9 @@ A sample python library for managing a SQLite database
 
 
 ## Download and Install
-`pip install NotAOrm` or `git clone https://github.com/ludel/NotAOrm.git` in your project
+`pip install NotAOrm` or `git clone https://github.com/ludel/notaorm.git` in your project
 
-There are no hard dependencies other than the Python standard library. NotAOrm run with python 3.6+.
+There are no hard dependencies other than the Python standard library. notaorm run with python 3.6+.
 
 ## Doc
 
@@ -24,11 +24,11 @@ BOOLEAN | `bool` | `Bool` | `not_null`, `unique`, `default`
 
 ### Create a new model
 ```python
-import NotAOrm
-from NotAOrm.table import Table
-from NotAOrm.datatype import Int, Varchar, Date
+import notaorm
+from notaorm.table import Table
+from notaorm.datatype import Int, Varchar, Date
 
-NotAOrm.database = 'test.db'
+notaorm.database = 'test.db'
 
 
 site = Table('site', table_row=(Int('id', primary_key=True, not_null=True),
@@ -111,4 +111,4 @@ By default in the delete method, commit is set to false
 
 ## License
 
-NotAOrm is MIT licensed.
+notaorm is MIT licensed.

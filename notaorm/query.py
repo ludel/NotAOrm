@@ -1,10 +1,9 @@
 import sqlite3
 from collections import namedtuple
-from datetime import datetime
 from typing import Generator
 
-from NotAOrm.condition import Condition
-from NotAOrm.sql import option, order
+from notaorm.condition import Condition
+from notaorm.sql import option, order
 
 
 class Query:

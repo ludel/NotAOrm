@@ -1,17 +1,17 @@
 from typing import Sequence
 
-import NotAOrm
-from NotAOrm.condition import Condition
-from NotAOrm.operator_enum import Comparator
-from NotAOrm.query import Show, Change
-from NotAOrm.sql import order, creation
+import notaorm
+from notaorm.condition import Condition
+from notaorm.operator_enum import Comparator
+from notaorm.query import Show, Change
+from notaorm.sql import order, creation
 
 
 class Table:
     def __init__(self, table_name: str, table_row: Sequence['Row']):
         self.table_name = table_name
-        self.show = Show(table_name, NotAOrm.database)
-        self.change = Change(table_name, NotAOrm.database)
+        self.show = Show(table_name, notaorm.database)
+        self.change = Change(table_name, notaorm.database)
         self._table_row = table_row
         self.pk = Row('OID')
 

@@ -1,11 +1,11 @@
 import os
 import unittest
 
-import NotAOrm
-from NotAOrm.datatype import Int, Varchar
-from NotAOrm.table import Table
+import notaorm
+from notaorm.datatype import Int, Varchar
+from notaorm.table import Table
 
-NotAOrm.database = 'test.db'
+notaorm.database = 'test.db'
 
 
 class TestChange(unittest.TestCase):
@@ -96,8 +96,9 @@ class TestChange(unittest.TestCase):
         self.assertEqual(site.count_visitor, 2)
 
     def test_pk(self):
-        site = self.site.show.get(self.site.pk == 1)
-        self.assertEqual(site.id, 1)
+        last_id = self.site.show.last().id
+        site = self.site.show.get(self.site.pk == last_id)
+        self.assertEqual(site.id, last_id)
 
     def test_first(self):
         self.assertEqual(self.site.show.first().url, 'test.com')
@@ -107,4 +108,4 @@ class TestChange(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        os.remove(NotAOrm.database)
+        os.remove(notaorm.database)

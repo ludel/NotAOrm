@@ -1,7 +1,7 @@
-from NotAOrm.condition import Condition
-from NotAOrm.operator_enum import Comparator
-from NotAOrm.sql import creation
-from NotAOrm.table import Row, MathFunction
+from notaorm.condition import Condition
+from notaorm.operator_enum import Comparator
+from notaorm.sql import creation
+from notaorm.table import Row, MathFunction
 
 
 class _Generic(Row):

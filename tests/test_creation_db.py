@@ -3,11 +3,11 @@ import unittest
 from datetime import date, datetime
 from sqlite3 import IntegrityError
 
-import NotAOrm
-from NotAOrm.datatype import Int, Varchar, Text, Bool, Date, Datetime
-from NotAOrm.table import Table
+import notaorm
+from notaorm.datatype import Int, Varchar, Text, Bool, Date, Datetime
+from notaorm.table import Table
 
-NotAOrm.database = 'test.db'
+notaorm.database = 'test.db'
 date_test = date(2020, 2, 19)
 
 
@@ -61,4 +61,4 @@ class TestCreationDB(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        os.remove(NotAOrm.database)
+        os.remove(notaorm.database)
