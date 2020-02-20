@@ -1,2 +1,2 @@
-name = "NotAOrm"
+name = 'notaorm'
 database = 'db.sqlite'

@@ -1,7 +1,7 @@
 from typing import Union
 
-from NotAOrm.Enum.operatorEnum import Conditional, Comparator
-from NotAOrm.SQLQueries import WHERE
+from notaorm.operator_enum import Conditional, Comparator
+from notaorm.sql.order import WHERE
 
 
 class Condition:

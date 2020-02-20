@@ -2,15 +2,15 @@ import sqlite3
 from collections import namedtuple
 from typing import Generator
 
-from NotAOrm import SQLQueries
-from condition import Condition
+from notaorm.condition import Condition
+from notaorm.sql import option, order
 
 
 class Query:
-
     def __init__(self, table_name, path_database):
         self.table_name = table_name
-        self._conn = sqlite3.connect(path_database)
+        self._conn = sqlite3.connect(path_database, detect_types=sqlite3.PARSE_DECLTYPES)
+        sqlite3.register_converter("BOOLEAN", lambda v: v.decode() == 'True')
 
     def _get_table_object(self, descriptions: tuple):
         return namedtuple(self.table_name, [desc[0] for desc in descriptions])
@@ -18,10 +18,10 @@ class Query:
     @staticmethod
     def _append_option(query: str, **kwargs):
         for key, value in kwargs.items():
-            if not hasattr(SQLQueries, key.upper()):
+            if not hasattr(option, key.upper()):
                 raise NotImplementedError('Option not implement')
 
-            query += getattr(SQLQueries, key.upper()).format(value)
+            query += getattr(option, key.upper()).format(value)
         return query
 
     def _fetch(self, query: str, *args, **kwargs):
@@ -63,25 +63,25 @@ class Change(Query):
         columns_to_set = ",".join(f'{key} = ?' for key in columns.keys())
         values = list(columns.values()) + condition.values
 
-        return self.exec(SQLQueries.UPDATE.format(columns_to_set, condition.left_side), *values)
+        return self.exec(order.UPDATE.format(columns_to_set, condition.left_side), *values)
 
     def insert(self, **columns) -> sqlite3.Cursor:
         keys = ",".join(columns.keys())
         values = ','.join('?' * len(columns.values()))
 
-        return self.exec(SQLQueries.INSERT.format(keys, values), *columns.values())
+        return self.exec(order.INSERT.format(keys, values), *columns.values())
 
     def delete(self, condition: Condition, commit=False) -> sqlite3.Cursor:
-        return self.exec(SQLQueries.DELETE.format(condition.left_side), *condition.values, commit=commit)
+        return self.exec(order.DELETE.format(condition.left_side), *condition.values, commit=commit)
 
 
 class Show(Query):
     def all(self, columns='*', **options) -> Generator:
-        return self._fetch_all(SQLQueries.SELECT_ALL, columns=columns, **options)
+        return self._fetch_all(order.SELECT_ALL, columns=columns, **options)
 
     def filter(self, condition: Condition, columns='*', **options) -> Generator:
         return self._fetch_all(
-            SQLQueries.SELECT_WHERE.format(condition.left_side),
+            order.SELECT_WHERE.format(condition.left_side),
             *condition.values,
             columns=columns,
             **options
@@ -89,8 +89,14 @@ class Show(Query):
 
     def get(self, condition: Condition, columns='*', **options) -> tuple:
         return self._fetch_one(
-            SQLQueries.SELECT_WHERE.format(condition.left_side),
+            order.SELECT_WHERE.format(condition.left_side),
             *condition.values,
             columns=columns,
             **options
         )
+
+    def first(self, columns='*') -> tuple:
+        return self._fetch_one(order.SELECT_ALL, columns=columns, order_by_asc=f'{self.table_name}.OID', limit=1)
+
+    def last(self, columns='*') -> tuple:
+        return self._fetch_one(order.SELECT_ALL, columns=columns, order_by_desc=f'{self.table_name}.OID', limit=1)
