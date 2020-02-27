@@ -3,9 +3,9 @@ A sample python library for managing a SQLite database
 
 
 ## Download and Install
-`pip install NotAOrm` or `git clone https://github.com/ludel/notaorm.git` in your project
+`pip install NotAOrm` or `git clone https://github.com/ludel/NotAOrm.git` in your project
 
-There are no hard dependencies other than the Python standard library. notaorm run with python 3.6+.
+There are no hard dependencies other than the Python standard library. NotAOrm run with python 3.6+.
 
 ## Doc
 
@@ -19,6 +19,7 @@ TEXT | `str` | `Text` | `length`, `not_null`, `unique`, `default` | By default l
 DATE | `datetime.date` | `Date` | `not_null`, `unique`, `default` | if default argument is set to `now`, the date will be automatically generate  
 TIMESTAMP | `datetime.datetime` | `Datetime` | `not_null`, `unique`, `default` | Same as `Date`
 BOOLEAN | `bool` | `Bool` | `not_null`, `unique`, `default`
+FOREIGN KEY | `Relation` | `ForeignKey` | `reference`, `not_null`, `unique`, `default` | Reference argument must be a Table object
 
 ## Examples
 
@@ -31,11 +32,12 @@ from notaorm.datatype import Int, Varchar, Date
 notaorm.database = 'test.db'
 
 
-site = Table('site', table_row=(Int('id', primary_key=True, not_null=True),
-                                Varchar('url', length=255, unique=True, not_null=True),
-                                Int('visitor', default=0),
-                                Date('last_check', default='now')))
-
+site = Table('site', rows=(
+    Int('id', primary_key=True, not_null=True),
+    Varchar('url', length=255, unique=True, not_null=True),
+    Int('visitor', default=0),
+    Date('last_check', default='now')
+))
 site.create()
 ```
 
@@ -80,16 +82,51 @@ condition_and = (site.visitor >= 10) & (site.id > 2)
 site.show.filter(condition_and, site.id)
 ```
 
-### Group by and math methods
-#### By SUM
+#### Group by and math methods
+##### By SUM
 ```python
-sites_visitor = site.show.all(site.visitor.sum, group_by=site.last_check)
+visitor_sum = site.show.all(site.visitor.sum, group_by=site.last_check)
 ```
-#### By COUNT
+##### By COUNT
 ```python
-sites_count = site.show.all(site.visitor.count, group_by=site.last_check)
+visitor_count = site.show.all(site.visitor.count, group_by=site.last_check)
+```
+##### By Max, Min, Avg
+```python
+# Max
+visitor_max = site.show.first(columns=site.visitor.max).max_visitor
+# Min
+visitor_min = site.show.first(columns=site.visitor.min).min_visitor
+# Avg
+visitor_avg = site.show.first(columns=site.visitor.avg).avg_visitor
 ```
 
+### Foreign key
+
+#### New webmaster model
+
+New model with a foreign key link to site model
+```python
+from notaorm.datatype import Int, Varchar, ForeignKey
+from notaorm.table import Table
+
+webmaster = Table('webmaster', rows=(
+    Int('id', primary_key=True, not_null=True),
+    Varchar('email'),
+    ForeignKey('site', reference=site),
+))
+```
+
+#### Request
+```python
+webmaster = webmaster.show.first()
+linked_site = webmaster.site
+
+print(linked_site.pk)
+print(linked_site.id, linked_site.url, linked_site.visitor, sep='\t')
+```
+It is better to use the pk field rather than the name of the primary key field because access to the pk field does not require
+the execution of a new sql request.
 ### Change methods
 
 #### Insert 

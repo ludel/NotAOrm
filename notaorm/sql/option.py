@@ -1,5 +1,6 @@
-ORDER_BY = ' ORDER BY {}'
-ORDER_BY_ASC = f'{ORDER_BY} ASC '
-ORDER_BY_DESC = f'{ORDER_BY} DESC'
-LIMIT = ' LIMIT {}'
-GROUP_BY = ' GROUP BY {}'
+JOIN = ' JOIN {} on {} = {} ', 1
+ORDER_BY = ' ORDER BY {}', 2
+ORDER_BY_ASC = ' ORDER BY {} ASC ', 2
+ORDER_BY_DESC = ' ORDER BY {} DESC ', 2
+GROUP_BY = ' GROUP BY {} ', 3
+LIMIT = ' LIMIT {} ', 4

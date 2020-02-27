@@ -1,6 +1,5 @@
 from typing import Sequence
 
-import notaorm
 from notaorm.condition import Condition
 from notaorm.operator_enum import Comparator
 from notaorm.query import Show, Change
@@ -8,35 +7,37 @@ from notaorm.sql import order, creation
 
 
 class Table:
-    def __init__(self, table_name: str, table_row: Sequence['Row']):
-        self.table_name = table_name
-        self.show = Show(table_name, notaorm.database)
-        self.change = Change(table_name, notaorm.database)
-        self._table_row = table_row
-        self.pk = Row('OID')
+    def __init__(self, name: str, rows: Sequence['_Row']):
+        self.table_name = name
+        self.show = Show(name, rows)
+        self.change = Change(name)
+        self.rows = rows
+        self.pk = _Row('ROWID', table_name=name)
 
-        for row in table_row:
-            row.table_name = table_name
+        for row in rows:
+            row.table_name = name
             setattr(self, row.row_name, row)
 
     def create(self):
-        row_sql = ', '.join(row.get_sql_creation() for row in self._table_row)
+        row_sql = ', '.join(row.get_sql_creation() for row in self.rows)
         full_sql = creation.CREATE_TABLE.format(row_sql)
         self.change.exec(full_sql)
 
-        for row_unique in [r for r in self._table_row if r.unique]:
+        for row_unique in [r for r in self.rows if r.unique]:
             self.change.exec(creation.UNIQUE.format(row_name=row_unique.row_name))
 
     def __str__(self):
         return self.table_name
 
 
-class Row:
-    def __init__(self, row_name: str, not_null=False, unique=False, default=None):
+class _Row:
+    prefix: str
+
+    def __init__(self, row_name: str, table_name=None, not_null=False, unique=False, default=None):
         self.row_name = row_name.replace(' ', '_')
         self.not_null = not_null
         self.unique = unique
-        self.table_name = None
+        self.table_name = table_name
         self.default = default
 
     def __eq__(self, other):

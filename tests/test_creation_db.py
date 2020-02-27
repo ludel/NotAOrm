@@ -4,7 +4,7 @@ from datetime import date, datetime
 from sqlite3 import IntegrityError
 
 import notaorm
-from notaorm.datatype import Int, Varchar, Text, Bool, Date, Datetime
+from notaorm.datatype import Int, Varchar, Text, Bool, Date, Datetime, ForeignKey
 from notaorm.table import Table
 
 notaorm.database = 'test.db'
@@ -12,7 +12,7 @@ date_test = date(2020, 2, 19)
 
 
 class TestCreationDB(unittest.TestCase):
-    site = Table(table_name='site', table_row=(
+    site = Table(name='site', rows=(
         Int('id', primary_key=True, not_null=True),
         Varchar('url', length=255, unique=True, not_null=True),
         Text('content', unique=True),
@@ -58,6 +58,15 @@ class TestCreationDB(unittest.TestCase):
         self.assertIsInstance(site.is_open, bool)
         self.assertIsInstance(site.last_check, date)
         self.assertIsInstance(site.datetime, datetime)
+
+    def test_foreign_key(self):
+        webmaster = Table(name='webmaster', rows=(
+            Int('uid', primary_key=True, not_null=True),
+            Varchar('username', unique=True),
+            ForeignKey('site', self.site)
+        ))
+        webmaster.create()
+        self.assertTrue(hasattr(webmaster, 'site'))
 
     @classmethod
     def tearDownClass(cls):

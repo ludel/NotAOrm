@@ -7,5 +7,8 @@ DELETE = 'DELETE FROM `TABLE_NAME` WHERE {}'
 
 SUM = 'SUM({}) as {}'
 COUNT = 'COUNT({}) as {}'
+MAX = 'MAX({}) as {}'
+MIN = 'MIN({}) as {}'
+AVG = 'AVG({}) as {}'
 
 WHERE = '{} {} {}'

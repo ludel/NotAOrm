@@ -1,17 +1,35 @@
 from notaorm.condition import Condition
 from notaorm.operator_enum import Comparator
 from notaorm.sql import creation
-from notaorm.table import Row, MathFunction
+from notaorm.table import _Row, MathFunction, Table
 
 
-class _Generic(Row):
-    prefix = ''
+class _Generic(_Row):
+    prefix: str
 
     def get_sql_creation(self):
         return super().get_sql_creation().format(prefix=self.prefix)
 
 
-class Int(_Generic):
+class _Number(_Generic):
+    @property
+    def sum(self):
+        return MathFunction('SUM', self.__repr__(), f'sum_{self.row_name}')
+
+    @property
+    def avg(self):
+        return MathFunction('AVG', self.__repr__(), f'avg_{self.row_name}')
+
+    @property
+    def min(self):
+        return MathFunction('MIN', self.__repr__(), f'min_{self.row_name}')
+
+    @property
+    def max(self):
+        return MathFunction('MAX', self.__repr__(), f'max_{self.row_name}')
+
+
+class Int(_Number):
     prefix = creation.INTEGER
 
     def __init__(self, row_name: str, primary_key=False, **kwargs):
@@ -23,17 +41,9 @@ class Int(_Generic):
             self.prefix += f' {creation.PRIMARY_KEY} {creation.AUTO_INCREMENT}'
         return super().get_sql_creation().format(prefix=self.prefix)
 
-    @property
-    def sum(self):
-        return MathFunction('SUM', self.__repr__(), f'sum_{self.row_name}')
 
-
-class Float(_Generic):
+class Float(_Number):
     prefix = creation.FLOAT
-
-    @property
-    def sum(self):
-        return MathFunction('SUM', self.__repr__(), f'sum_{self.row_name}')
 
 
 class Varchar(_Generic):
@@ -71,4 +81,13 @@ class Bool(_Generic):
     def __init__(self, row_name: str, default=None, **kwargs):
         if default is not None:
             kwargs['default'] = 1 if default else 0
+        super().__init__(row_name, **kwargs)
+
+
+class ForeignKey(_Generic):
+    prefix = creation.FOREIGNKEY
+
+    def __init__(self, row_name: str, reference: Table, **kwargs):
+        self.references_table = reference
+        self.prefix = self.prefix.format(row_name=row_name, *repr(reference.pk).replace("'", '').split('.'))
         super().__init__(row_name, **kwargs)
