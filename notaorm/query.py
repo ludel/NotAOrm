@@ -15,6 +15,9 @@ class Query:
         self.foreign_rows = [r for r in table_rows if 'FOREIGN KEY' in r.prefix]
         self._conn = sqlite3.connect(notaorm.database, detect_types=sqlite3.PARSE_DECLTYPES)
 
+        if notaorm.print_query:
+            self._conn.set_trace_callback(print)
+
     def _get_table_object(self, descriptions: tuple):
         return namedtuple(self.table_name, [desc[0] for desc in descriptions])
 
