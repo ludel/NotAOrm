@@ -136,7 +136,7 @@ site.change.insert(url='google.com')
 
 #### Update 
 ```python
-site.change.update(site.url.is_like('bing%'), url='google.com')
+site.change.update(site.url.start_with('bing'), url='google.com')
 ```
 
 #### Delete 

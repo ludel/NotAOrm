@@ -80,7 +80,7 @@ class TestChange(unittest.TestCase):
         self.assertGreater(len(list(test_url)), 1)
 
     def test_update(self):
-        self.site.change.update(self.site.url.is_like('test.c%'), url='test2.com')
+        self.site.change.update(self.site.url.like('test.c%'), url='test2.com')
         self.assertIsNone(self.site.show.get(self.site.url == 'test.com'))
         self.assertIsNotNone(self.site.show.get(self.site.url == 'test2.com'))
 
@@ -143,10 +143,10 @@ class TestChange(unittest.TestCase):
         count_visitor = self.site.show.get(self.site.url == 'aaa.com', columns=self.site.visitor.count)
         self.assertEqual(count_visitor.count_visitor, 2)
 
-        min_visitor = self.site.show.get(self.site.url.is_like('google%'), columns=self.site.visitor.min)
+        min_visitor = self.site.show.get(self.site.url.start_with('google'), columns=self.site.visitor.min)
         self.assertEqual(min_visitor.min_visitor, 100)
 
-        max_visitor = self.site.show.get(self.site.url.is_like('google%'), columns=self.site.visitor.max)
+        max_visitor = self.site.show.get(self.site.url.start_with('google'), columns=self.site.visitor.max)
         self.assertEqual(max_visitor.max_visitor, 1000)
 
         avg_visitor = self.site.show.get(self.site.url == 'aaa.com', columns=self.site.visitor.avg)

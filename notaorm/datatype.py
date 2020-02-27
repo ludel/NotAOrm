@@ -51,8 +51,17 @@ class Varchar(_Generic):
         super().__init__(row_name, **kwargs)
         self.prefix = creation.VARCHAR.format(length)
 
-    def is_like(self, other):
-        return Condition(self.__repr__(), Comparator.str, '?', [other])
+    def like(self, search: str):
+        return Condition(self.__repr__(), Comparator.str, '?', [search])
+
+    def start_with(self, search: str):
+        return self.like(f'{search}%')
+
+    def end_with(self, search: str):
+        return self.like(f'%{search}')
+
+    def contain(self, search: str):
+        return self.like(f'%{search}%')
 
 
 class Text(_Generic):
