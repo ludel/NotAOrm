@@ -7,7 +7,7 @@ A sample python library for managing a SQLite database
 
 There are no hard dependencies other than the Python standard library. NotAOrm run with python 3.6+.
 
-## Doc
+## Documentation
 
 ### Data types list
 SQL | Python | lib | Args | Note
@@ -49,7 +49,7 @@ site.show.get(site.url == 'google.com')
 ```
 or if we want specific columns
 ```python
-site.show.get(site.url == 'google.com', columns=[site.url, site.last_check])
+site.show.get(site.url.end_with('.com'), columns=[site.url, site.last_check])
 ```
 
 #### Get all elements
@@ -83,21 +83,18 @@ site.show.filter(condition_and, site.id)
 ```
 
 #### Group by and math methods
-##### By SUM
+##### By Sum
 ```python
 visitor_sum = site.show.all(site.visitor.sum, group_by=site.last_check)
 ```
-##### By COUNT
+##### By Count
 ```python
 visitor_count = site.show.all(site.visitor.count, group_by=site.last_check)
 ```
 ##### By Max, Min, Avg
 ```python
-# Max
 visitor_max = site.show.first(columns=site.visitor.max).max_visitor
-# Min
 visitor_min = site.show.first(columns=site.visitor.min).min_visitor
-# Avg
 visitor_avg = site.show.first(columns=site.visitor.avg).avg_visitor
 ```
 
@@ -115,6 +112,7 @@ webmaster = Table('webmaster', rows=(
     Varchar('email'),
     ForeignKey('site', reference=site),
 ))
+webmaster.create()
 ```
 
 #### Request
@@ -127,8 +125,8 @@ print(linked_site.id, linked_site.url, linked_site.visitor, sep='\t')
 ```
 It is better to use the pk field rather than the name of the primary key field because access to the pk field does not require
 the execution of a new sql request.
-### Change methods
 
+### Change methods
 #### Insert 
 ```python
 site.change.insert(url='google.com')
