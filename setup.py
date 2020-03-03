@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="NotAOrm",
     python_requires='>=3.6',
-    version="1.1.0",
+    version="1.2.0",
     author="ludel",
     author_email="ludel47@gmail.com",
     description="A sample python library for managing a SQLite database",

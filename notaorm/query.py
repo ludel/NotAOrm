@@ -10,9 +10,10 @@ sqlite3.register_converter("BOOLEAN", lambda v: v.decode() == 'True')
 
 
 class Query:
-    def __init__(self, table_name, table_rows=()):
+    def __init__(self, table_name, table_rows=(), init_condition=None):
         self.table_name = table_name
-        self.foreign_rows = [r for r in table_rows if 'FOREIGN KEY' in r.prefix]
+        self.init_condition = init_condition
+        self.foreign_rows = [r for r in table_rows if type(r).__name__ is 'ForeignKey']
         self._conn = sqlite3.connect(notaorm.database, detect_types=sqlite3.PARSE_DECLTYPES)
 
         if notaorm.print_query:
@@ -50,26 +51,35 @@ class Query:
 
         return fetch
 
-    def _fetch(self, query: str, *args, **kwargs):
-        columns = kwargs.pop('columns')
+    def _fetch(self, query: str, columns, condition=None, **kwargs):
         if columns is not '*':
             columns = ','.join(repr(c) for c in columns) if type(columns) is list else repr(columns)
 
+        condition_values = []
+        if condition is not None:
+            if self.init_condition is not None:
+                condition &= self.init_condition
+            condition_values = condition.values
+            kwargs['condition'] = condition.left_side
+        elif type(self.init_condition) is Condition:
+            condition_values = self.init_condition.values
+            kwargs['condition'] = self.init_condition.left_side
+
         full_query = self._append_option(query, **kwargs).replace('COLUMNS_NAME', columns)
-        res = self.exec(full_query, *args, commit=False)
+        res = self.exec(full_query, *condition_values, commit=False)
         table_obj = self._get_table_object(res.description)
 
         return res, table_obj
 
-    def _fetch_all(self, query: str, *args, **kwargs):
-        res, table_obj = self._fetch(query, *args, **kwargs)
+    def _fetch_all(self, columns, **kwargs):
+        res, table_obj = self._fetch(order.SELECT, columns, **kwargs)
         fetch = res.fetchall()
 
         for items in fetch:
             yield table_obj(*items)
 
-    def fetch_one(self, query: str, *args, **kwargs):
-        res, table_obj = self._fetch(query, *args, **kwargs)
+    def fetch_one(self, columns, **kwargs):
+        res, table_obj = self._fetch(order.SELECT, columns, **kwargs)
         fetch = res.fetchone()
         if fetch is None:
             return
@@ -106,48 +116,27 @@ class Change(Query):
 
 class Show(Query):
     def all(self, columns='*', **options) -> Generator:
-        return self._fetch_all(order.SELECT_ALL, columns=columns, **options)
+        return self._fetch_all(columns, **options)
 
     def filter(self, condition: Condition, columns='*', **options) -> Generator:
-        return self._fetch_all(
-            order.SELECT_WHERE.format(condition.left_side),
-            *condition.values,
-            columns=columns,
-            **options
-        )
+        return self._fetch_all(columns, condition=condition, **options)
 
     def get(self, condition: Condition, columns='*', **options) -> Optional[NamedTuple]:
-        return self.fetch_one(
-            order.SELECT_WHERE.format(condition.left_side),
-            *condition.values,
-            columns=columns,
-            **options
-        )
+        return self.fetch_one(columns, condition=condition, **options)
 
     def first(self, columns='*') -> Optional[NamedTuple]:
-        return self.fetch_one(order.SELECT_ALL, columns=columns, order_by_asc=f'{self.table_name}.OID', limit=1)
+        return self.fetch_one(columns, order_by_asc=f'{self.table_name}.ROWID', limit=1)
 
     def last(self, columns='*') -> Optional[NamedTuple]:
-        return self.fetch_one(order.SELECT_ALL, columns=columns, order_by_desc=f'{self.table_name}.OID', limit=1)
+        return self.fetch_one(columns, order_by_desc=f'{self.table_name}.ROWID', limit=1)
 
 
-class Relation:
+class Relation(Show):
     def __init__(self, value, row):
         self._ref_table = row.references_table
         self.pk = value
-
-    def __getattr__(self, name):
-        try:
-            return object.__getattribute__(self, name)
-        except AttributeError:
-            return self._request_row(name)
-
-    def _request_row(self, row_name):
-        request = Show(self._ref_table.table_name, self._ref_table.rows).get(self._ref_table.pk == self.pk)
-        if request is not None:
-            for row in self._ref_table.rows:
-                setattr(self, row.row_name, getattr(request, row.row_name))
-            return getattr(self, row_name)
+        super().__init__(self._ref_table.table_name, self._ref_table.rows,
+                         init_condition=(self._ref_table.pk == self.pk))
 
     def __repr__(self):
         return f'<Relation: {self._ref_table} {self.pk}>'
