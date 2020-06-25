@@ -117,10 +117,10 @@ webmaster.create()
 
 #### Request
 ```python
-webmaster = webmaster.show.first()
-print(webmaster.site.pk)
+first_webmaster = webmaster.show.first()
+print(first_webmaster.site.pk)
 
-linked_site = webmaster.site.first()
+linked_site = first_webmaster.site.first()
 print(linked_site.id, linked_site.url, linked_site.visitor, sep='\t')
 ```
 It is better to use the pk field rather than the name of the primary key field because access to the pk field does not require
