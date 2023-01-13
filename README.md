@@ -1,5 +1,5 @@
 # NotAOrm
-A sample python library for managing a SQLite database
+A simple python library for managing a SQLite database
 
 
 ## Download and Install
